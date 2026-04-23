@@ -1,43 +1,3 @@
-
-<!-- 二维码区域 -->
-<div id="qrArea" style="display:none;text-align:center;padding:20px 12px;margin-top:12px;">
-  <div style="display:inline-block;background:#fff;padding:16px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);">
-    <img src="qrcode_nn.png" alt="预约二维码" style="width:220px;height:220px;display:block;margin:0 auto;">
-    <p style="margin-top:10px;font-size:13px;color:#333;">扫一扫 · 在线预约</p>
-    <p style="margin-top:6px;font-size:11px;color:#999;">https://jimquant1983.github.io/nadianjie/</p>
-    <a href="qrcode_nn.png" download="拿捏社预约二维码.png" style="display:inline-block;margin-top:10px;padding:6px 20px;background:#ffd700;color:#000;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold;">📥 下载二维码</a>
-  </div>
-</div>
-<div style="text-align:center;padding:6px 12px 16px;">
-  <span onclick="var a=document.getElementById('qrArea');a.style.display=(a.style.display==='none'?'block':'none')" style="display:inline-block;padding:6px 16px;border:1px solid rgba(255,215,0,.3);border-radius:6px;color:rgba(255,215,0,.6);font-size:12px;cursor:pointer;">📱 生成二维码 · 推荐给更多的人</span>
-</div>
-
-
-function copyWx(){
-  var w='dsf0951';
-  if(navigator.clipboard&&navigator.clipboard.writeText){
-    navigator.clipboard.writeText(w).then(function(){alert('微信号已复制: '+w+'\n请打开微信搜索添加')});
-  } else {
-    var ta=document.createElement('textarea');
-    ta.value=w;ta.style.position='fixed';ta.style.left='-9999px';
-    document.body.appendChild(ta);ta.select();
-    try{document.execCommand('copy');alert('微信号已复制: '+w+'\n请打开微信搜索添加')}catch(e){alert('微信号: '+w)}
-    document.body.removeChild(ta);
-  }
-}
-function dlCal(){
-  var id=document.getElementById('scCd').textContent.trim();
-  var dtl=document.getElementById('scDt').textContent.trim()||'';
-  var parts=dtl.match(/(\\d{4})年(\\d{1,2})月(\\d{1,2})日.*?到店.*?(\\d{2}:\\d{2})/);
-  if(!parts){alert('请先完成预约再添加日历');return;}
-  var dt=new Date(parts[1]+'-'+parts[2]+'-'+parts[3]+' '+parts[4]);
-  var endDt=new Date(dt.getTime()+60*60*1000);
-  function fmt(d){return d.toISOString().replace(/-|:/g,'').substring(0,15)+'Z';}
-  var ics='BEGIN:VCALENDAR\\nVERSION:2.0\\nPRODID:-//NN//Booking//ZH\\nBEGIN:VEVENT\\nDTSTART:'+fmt(dt)+'\\nDTEND:'+fmt(endDt)+'\\nSUMMARY:拿捏社推拿 - 到店\\nDESCRIPTION:预约编号: '+id+'\\nLOCATION:银川市金凤区新昌路蓝山公寓5楼521号\\nBEGIN:VALARM\\nTRIGGER:-PT1H\\nACTION:DISPLAY\\nDESCRIPTION:拿捏社推拿预约提醒\\nEND:VALARM\\nEND:VEVENT\\nEND:VCALENDAR';
-  var blob=new Blob([ics],{type:'text/calendar;charset=utf-8'});
-  var a=document.createElement('a');a.href=URL.createObjectURL(blob);
-  a.download='拿捏社预约_'+id+'.ics';a.click();URL.revokeObjectURL(a.href);
-}
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -71,42 +31,22 @@ body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex
   inset:0;
   background:linear-gradient(180deg,transparent 40%,rgba(13,10,6,.85) 95%);
 }
-.header-banner .logo-badge{
-  position:absolute;
-  bottom:16px;
-  left:50%;
-  transform:translateX(-50%);
-  display:flex;
-  align-items:center;
-  gap:10px;
-  background:rgba(13,10,6,.6);
-  backdrop-filter:blur(10px);
-  -webkit-backdrop-filter:blur(10px);
-  border:1px solid rgba(255,215,0,.25);
-  border-radius:30px;
-  padding:8px 20px 8px 12px;
+/* ===== 成功弹窗头图 ===== */
+.success-header{
+  width:calc(100% + 48px);
+  height:180px;
+  overflow:hidden;
+  border-radius:20px 20px 0 0;
+  position:relative;
+  margin-left:-24px;
+  margin-bottom:18px;
 }
-.header-banner .logo-badge img{
-  width:32px;
-  height:32px;
+.success-header img{
+  width:100%;
+  height:100%;
   object-fit:contain;
-  flex-shrink:0;
-}
-.header-banner .logo-badge .logo-text{
-  color:#ffd700;
-  font-size:.82rem;
-  font-weight:700;
-  letter-spacing:2px;
-  text-shadow:0 2px 8px rgba(0,0,0,.5);
-}
-.header-banner .logo-badge .logo-sub{
-  color:rgba(255,215,0,.6);
-  font-size:.55rem;
-  letter-spacing:1px;
-}
-/* 深色小号头图（如果窄版图适合） */
-.header-banner-sm{
-  display:none;
+  display:block;
+  background:#12100e;
 }
 
 /* ===== 主卡片区域 ===== */
@@ -199,9 +139,9 @@ body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex
 /* ===== 弹窗 ===== */
 .ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:999;justify-content:center;align-items:center;padding:20px;}
 .ov.sh{display:flex;}
-.mod{background:#12100e;border-radius:20px;padding:30px 24px;max-width:380px;width:100%;text-align:center;animation:pop .35s ease;border:1px solid rgba(255,215,0,.1);}
+.mod{background:#12100e;border-radius:20px;padding:30px 24px;max-width:380px;width:100%;text-align:center;animation:pop .35s ease;border:1px solid rgba(255,215,0,.1);position:relative;overflow:hidden;}
+.mod.suc-mod{padding:0 24px 30px;}
 @keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
-.mod .icn{font-size:3.5rem;margin-bottom:12px;color:#ffd700;}
 .mod h2{font-size:1.3rem;color:#f0d8b8;margin-bottom:4px;}
 .mod .sb{color:#8a7a6a;font-size:.85rem;margin-bottom:16px;}
 .mod .dtl{background:linear-gradient(145deg,#1a1510,#0f0c0a);border-radius:12px;padding:14px;text-align:left;font-size:.85rem;line-height:1.9;margin-bottom:16px;border:1px solid rgba(255,215,0,.08);color:#c0b0a0;}
@@ -212,6 +152,7 @@ body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex
 .sp{width:36px;height:36px;border:3px solid rgba(255,215,0,.1);border-top:3px solid #d44500;border-radius:50%;animation:spi .8s linear infinite;margin:0 auto 12px;}
 @keyframes spi{to{transform:rotate(360deg)}}
 
+
 /* ===== 成功弹窗 ===== */
 .success-header{width:100%;height:50px;overflow:hidden;border-radius:16px 16px 0 0;margin-bottom:8px;}
 .success-header img{width:100%;height:100%;object-fit:cover;display:block;}
@@ -219,7 +160,8 @@ body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex
 .suc-mod h2{text-align:center;color:#ffd700;margin:8px 0 2px;font-size:1rem;}
 .suc-mod .sb{text-align:center;color:rgba(255,215,0,.5);font-size:.75rem;margin-bottom:4px;}
 .suc-mod .cd{text-align:center;font-size:.8rem;letter-spacing:1px;color:rgba(255,215,0,.8);margin-bottom:6px;}
-.suc-mod .dtl{text-align:left;font-size:.75rem;color:rgba(255,215,0,.55);line-height:1.4;margin-bottom:4px;}</style>
+.suc-mod .dtl{text-align:left;font-size:.75rem;color:rgba(255,215,0,.55);line-height:1.4;margin-bottom:4px;}
+</style>
 </head>
 <body>
 
@@ -229,13 +171,6 @@ body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex
 <div class="header-banner">
   <img src="header_main.jpg" alt="拿捏社">
   <div class="overlay"></div>
-  <div class="logo-badge">
-    <img src="logo_gold.png" alt="🍃" onerror="this.style.display='none'">
-    <div>
-      <div class="logo-text">拿捏社推拿工作室</div>
-      <div class="logo-sub">— 拿捏到位 · 身心舒泰 —</div>
-    </div>
-  </div>
 </div>
 
 <div class="main-card">
@@ -297,7 +232,7 @@ body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex
 <div class="nv">
 <button class="nb bk" onclick="go2(1)">返回预约</button>
 <button class="nb" style="background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;box-shadow:0 3px 8px rgba(192,57,43,.2);"><a href="tel:17049733788" style="border:none;color:#fff;"><i class="fas fa-phone-alt"></i> 电话</a></button>
-<button class="nb" style="background:linear-gradient(135deg,#2d8a4e,#1a6b3a);color:#fff;box-shadow:0 3px 8px rgba(0,100,0,.2);" onclick="copyWx()"><i class="fab fa-weixin"></i> 微信 DSF0951</button>
+<button class="nb" style="background:linear-gradient(135deg,#2d8a4e,#1a6b3a);color:#fff;box-shadow:0 3px 8px rgba(0,100,0,.2);"><span onclick="copyWx()" style="border:none;color:#fff;cursor:pointer;"><i class="fab fa-weixin"></i> 微信 DSF0951</span></button>
 </div>
 </div>
 
@@ -322,7 +257,6 @@ body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex
 <p class="sb">预约已提交，请按时到店</p>
 <div class="cd" id="scCd">预约识别号 NN------</div>
 <div class="dtl" id="scDt"></div>
-
 <div style="margin:14px 0 10px;border-top:1px solid rgba(255,215,0,.12);padding-top:12px;">
   <div style="display:flex;gap:8px;justify-content:center;flex-wrap:nowrap;overflow-x:auto;padding:0 0 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
     <a href="https://uri.amap.com/marker?position=106.26668,38.47088&name=拿捏社推拿工作室&src=web" target="_blank" rel="noopener" style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:#1677ff;color:#fff;border-radius:8px;text-decoration:none;font-size:12px;white-space:nowrap;"><svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> 高德</a>
@@ -334,11 +268,9 @@ body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex
   </div>
   <p style="margin-top:6px;font-size:10px;color:rgba(255,215,0,.35);text-align:center;">银川市金凤区新昌路蓝山公寓5楼521号 · 向左滑动查看更多</p>
 </div>
-
 <button class="bt" onclick="location.reload()"><i class="fas fa-redo"></i> 重新预约</button>
 </div>
-</div>
-<script>
+</div><script>
 var sv=[
 {id:'s1',n:'肩颈按摩',d:20,p:88,m:'缓解肩颈酸痛'},
 {id:'s2',n:'腰背腿按摩',d:30,p:108,m:'放松腰背腿部'},
@@ -430,4 +362,80 @@ if(!n){alert('请输入您的称呼');return;}
 if(!/^1(3[0-9]|4[5-9]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\d{8}$/.test(p)){alert('请输入真实有效的手机号码');return;}
 var s=sv.find(function(x){return x.id===ss});var m=tm(stm);var now=new Date();
 var bid='NN'+now.getFullYear().toString().slice(-2)+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0');
-var d={id:bid,name:n,phone:p,d:sd,svc:s.n,dur:s.d,pr:s.p,ts:stm,te:tt(m+s.d+BF*2),ss:tt(m+BF),se:tt(m+BF+s.d),s:'待确认',ca:now.toLocaleString
+var d={id:bid,name:n,phone:p,d:sd,svc:s.n,dur:s.d,pr:s.p,ts:stm,te:tt(m+s.d+BF*2),ss:tt(m+BF),se:tt(m+BF+s.d),s:'待确认',ca:now.toLocaleString('zh-CN')};
+document.getElementById('ldOv').classList.add('sh');document.getElementById('b3').disabled=true;
+setTimeout(function(){sb(d);document.getElementById('ldOv').classList.remove('sh');scS(d);},1000);
+}
+function scS(d){
+document.getElementById('scCd').textContent='预约识别号 ' + d.id;
+document.getElementById('scDt').innerHTML='<strong>'+d.name+'</strong> 您好！<br><br>💆 项目：'+d.svc+'（'+d.dur+'分钟）<br>📅 日期：'+d.d+'<br>⏰ 到店时间：<strong>'+d.ts+'</strong><br>🕐 服务时间：'+d.ss+'-'+d.se+'<br>💰 费用：¥'+d.pr+'<br>📋 状态：待确认';
+document.getElementById('scOv').classList.add('sh');
+}
+function ra(){
+var l=gb(),fs=document.getElementById('fs').value,fd=document.getElementById('fd').value;
+var t=new Date().toISOString().split('T')[0];
+document.getElementById('st1').textContent=l.length;document.getElementById('st2').textContent=l.filter(function(b){return b.d===t}).length;
+document.getElementById('st3').textContent=l.filter(function(b){return b.s==='待确认'}).length;document.getElementById('st4').textContent=l.filter(function(b){return b.s==='已完成'}).length;
+var f=l;if(fs!=='all')f=f.filter(function(b){return b.s===fs});if(fd)f=f.filter(function(b){return b.d===fd});
+f.sort(function(a,b){if(a.d!==b.d)return b.d.localeCompare(a.d);return a.ts.localeCompare(b.ts);});
+var el=document.getElementById('al');
+if(f.length===0){el.innerHTML='<div class="em"><i class="far fa-folder-open"></i><p>暂无预约</p></div>';return;}
+el.innerHTML=f.map(function(b){
+var cl={'待确认':'bd1','已确认':'bd2','已完成':'bd3','已取消':'bd4'}[b.s]||'bd1';
+var mk=b.phone.slice(0,3)+'****'+b.phone.slice(-4);
+return '<div class="ai"><div class="if"><div class="nm">'+b.name+' <span class="pm" onclick="rv(\''+b.id+'\')" id="ph-'+b.id+'">'+mk+'</span></div><div class="dt">'+b.d+' '+b.ts+' · '+b.svc+'</div></div><span class="bd '+cl+'">'+b.s+'</span><div class="ac">'+(b.s==='待确认'?'<button class="ok" onclick="ud(\''+b.id+'\',\'已确认\')">✓</button>':'')+(b.s!=='已完成'&&b.s!=='已取消'?'<button class="dn" onclick="ud(\''+b.id+'\',\'已完成\')">✔</button>':'')+(b.s!=='已取消'?'<button class="no" onclick="ud(\''+b.id+'\',\'已取消\')">✕</button>':'')+'</div></div>';
+}).join('');
+}
+function ud(id,s2){if(!confirm('确定操作？'))return;us(id,s2);ra();}
+function rv(id){var el=document.getElementById('ph-'+id);if(!el||el.classList.contains('rv'))return;var b=gb().find(function(x){return x.id===id});if(!b)return;el.textContent=b.phone;el.classList.add('rv');setTimeout(function(){if(el.classList.contains('rv')){el.textContent=b.phone.slice(0,3)+'****'+b.phone.slice(-4);el.classList.remove('rv');}},8000);}
+function exp(){var l=gb();if(!l.length){alert('暂无记录');return;}var c='编号,称呼,电话,日期,到店时间,项目,时长,费用,状态,创建时间\n';l.forEach(function(b){c+=b.id+','+b.name+','+b.phone+','+b.d+','+b.ts+','+b.svc+','+b.dur+','+b.pr+','+b.s+','+b.ca+'\n';});var b=new Blob(['\uFEFF'+c],{type:'text/csv;charset=utf-8;'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='预约_'+new Date().toISOString().split('T')[0]+'.csv';a.click();URL.revokeObjectURL(a.href);}
+function rsAll(){localStorage.removeItem('nnB');ss=null;sd='';stm='';document.getElementById('in1').value='';document.getElementById('in2').value='';rS();document.getElementById('ds').innerHTML='';document.getElementById('tg').innerHTML='';document.getElementById('b1').disabled=true;document.getElementById('b2').disabled=true;document.getElementById('b3').disabled=true;document.getElementById('svb').textContent='请先选服务';document.getElementById('th').innerHTML='请选择日期';for(var i=1;i<=4;i++){document.getElementById('dt'+i).className='dt';}document.getElementById('dt1').classList.add('act');for(var i=1;i<=4;i++){document.getElementById('pg'+i).classList.toggle('act',i===1);}document.getElementById('c1').textContent='—';document.getElementById('c2').textContent='—';document.getElementById('c3').textContent='—';document.getElementById('c4').textContent='—';document.getElementById('c5').textContent='¥0';}
+window.addEventListener('DOMContentLoaded',function(){rS();});
+
+function copyWx(){
+  var w="dsf0951";
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(w).then(function(){alert("微信号已复制: "+w+"\n请打开微信搜索添加")});
+  } else {
+    var ta=document.createElement("textarea");
+    ta.value=w;ta.style.position="fixed";ta.style.left="-9999px";
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand("copy");alert("微信号已复制: "+w+"\n请打开微信搜索添加")}catch(e){alert("微信号: "+w)}
+    document.body.removeChild(ta);
+  }
+}
+
+function dlCal(){
+  var id=document.getElementById("scCd").textContent.trim();
+  var dtl=document.getElementById("scDt").textContent.trim()||"";
+  var parts=dtl.match(/(\d{4})年(\d{1,2})月(\d{1,2})日.*?到店.*?(\d{2}:\d{2})/);
+  if(!parts){alert("请先完成预约再添加日历");return;}
+  var dt=new Date(parts[1]+"-"+parts[2]+"-"+parts[3]+" "+parts[4]);
+  var endDt=new Date(dt.getTime()+60*60*1000);
+  function fmt(d){return d.toISOString().replace(/-|:/g,"").substring(0,15)+"Z";}
+  var ics="BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NN//Booking//ZH\nBEGIN:VEVENT\nDTSTART:"+fmt(dt)+"\nDTEND:"+fmt(endDt)+"\nSUMMARY:拿捏社推拿 - 到店\nDESCRIPTION:预约编号: "+id+"\nLOCATION:银川市金凤区新昌路蓝山公寓5楼521号\nBEGIN:VALARM\nTRIGGER:-PT1H\nACTION:DISPLAY\nDESCRIPTION:拿捏社推拿预约提醒\nEND:VALARM\nEND:VEVENT\nEND:VCALENDAR";
+  var blob=new Blob([ics],{type:"text/calendar;charset=utf-8"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="拿捏社预约_"+id+".ics";a.click();URL.revokeObjectURL(a.href);
+}</script>
+
+
+<!-- 二维码区域 -->
+<div id="qrArea" style="display:none;text-align:center;padding:20px 12px;margin-top:12px;">
+  <div style="display:inline-block;background:#fff;padding:16px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);">
+    <img src="qrcode_nn.png" alt="预约二维码" style="width:220px;height:220px;display:block;margin:0 auto;">
+    <p style="margin-top:10px;font-size:13px;color:#333;">扫一扫 · 在线预约</p>
+    <p style="margin-top:6px;font-size:11px;color:#999;">https://jimquant1983.github.io/nadianjie/</p>
+    <a href="qrcode_nn.png" download="拿捏社预约二维码.png" style="display:inline-block;margin-top:10px;padding:6px 20px;background:#ffd700;color:#000;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold;">📥 下载二维码</a>
+  </div>
+</div>
+<div style="text-align:center;padding:6px 12px 16px;">
+  <span onclick="var a=document.getElementById('qrArea');a.style.display=(a.style.display==='none'?'block':'none')" style="display:inline-block;padding:6px 16px;border:1px solid rgba(255,215,0,.3);border-radius:6px;color:rgba(255,215,0,.6);font-size:12px;cursor:pointer;">📱 生成二维码 · 推荐给更多的人</span>
+</div>
+
+<!-- 底部广告栏 -->
+<div style="text-align:center;padding:16px 12px;margin-top:6px;border-top:1px solid rgba(255,215,0,.08);">
+  <span style="color:rgba(255,215,0,.5);font-size:12px;">📱 同款预约网页或更多功能定制 · 请联系微信 <span onclick="copyWx()" style="color:#ffd700;cursor:pointer;text-decoration:underline;text-decoration-style:dashed;">DSF0951</span></span>
+</div>
+</body>
+</html>
