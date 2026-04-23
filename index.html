@@ -12,6 +12,19 @@
   <span onclick="var a=document.getElementById('qrArea');a.style.display=(a.style.display==='none'?'block':'none')" style="display:inline-block;padding:6px 16px;border:1px solid rgba(255,215,0,.3);border-radius:6px;color:rgba(255,215,0,.6);font-size:12px;cursor:pointer;">📱 生成二维码 · 推荐给更多的人</span>
 </div>
 
+
+function copyWx(){
+  var w='dsf0951';
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(w).then(function(){alert('微信号已复制: '+w+'\n请打开微信搜索添加')});
+  } else {
+    var ta=document.createElement('textarea');
+    ta.value=w;ta.style.position='fixed';ta.style.left='-9999px';
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand('copy');alert('微信号已复制: '+w+'\n请打开微信搜索添加')}catch(e){alert('微信号: '+w)}
+    document.body.removeChild(ta);
+  }
+}
 function dlCal(){
   var id=document.getElementById('scCd').textContent.trim();
   var dtl=document.getElementById('scDt').textContent.trim()||'';
@@ -284,14 +297,14 @@ body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex
 <div class="nv">
 <button class="nb bk" onclick="go2(1)">返回预约</button>
 <button class="nb" style="background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;box-shadow:0 3px 8px rgba(192,57,43,.2);"><a href="tel:17049733788" style="border:none;color:#fff;"><i class="fas fa-phone-alt"></i> 电话</a></button>
-<button class="nb" style="background:linear-gradient(135deg,#2d8a4e,#1a6b3a);color:#fff;box-shadow:0 3px 8px rgba(0,100,0,.2);"><a href="weixin://dsf0951" style="border:none;color:#fff;"><i class="fab fa-weixin"></i> 微信</a></button>
+<button class="nb" style="background:linear-gradient(135deg,#2d8a4e,#1a6b3a);color:#fff;box-shadow:0 3px 8px rgba(0,100,0,.2);" onclick="copyWx()"><i class="fab fa-weixin"></i> 微信 DSF0951</button>
 </div>
 </div>
 
 <div class="cb">
 <i class="fas fa-phone"></i> <a href="tel:17049733788">点击呼叫</a>
 <span class="dv"></span>
-<a href="weixin://dsf0951"><i class="fab fa-weixin"></i> 添加微信</a>
+<a href="javascript:copyWx()"><i class="fab fa-weixin"></i> 添加微信 DSF0951</a>
 <span class="dv"></span>
 <a href="javascript:go2(4)" style="border-bottom:none;color:rgba(255,215,0,.4);font-size:.68rem;"><i class="fas fa-cog"></i> 管理</a>
 <span class="dv"></span>
@@ -316,7 +329,7 @@ body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex
     <a href="https://api.map.baidu.com/place/search?query=拿捏社推拿工作室&location=38.47088,106.26668&radius=1000&output=html&src=web" target="_blank" rel="noopener" style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:#2932e1;color:#fff;border-radius:8px;text-decoration:none;font-size:12px;white-space:nowrap;"><svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> 百度</a>
     <a href="https://apis.map.qq.com/uri/v1/marker?marker=coord:38.47088,106.26668;title:拿捏社推拿工作室&referer=myapp" target="_blank" rel="noopener" style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:#00b5ff;color:#fff;border-radius:8px;text-decoration:none;font-size:12px;white-space:nowrap;"><svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> 腾讯</a>
     <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;border-radius:8px;font-size:12px;white-space:nowrap;"><a href="tel:17049733788" style="color:#fff;text-decoration:none;"><i class="fas fa-phone-alt"></i> 呼叫</a></span>
-    <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:linear-gradient(135deg,#2d8a4e,#1a6b3a);color:#fff;border-radius:8px;font-size:12px;white-space:nowrap;"><a href="weixin://dsf0951" style="color:#fff;text-decoration:none;"><i class="fab fa-weixin"></i> 微信</a></span>
+    <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:linear-gradient(135deg,#2d8a4e,#1a6b3a);color:#fff;border-radius:8px;font-size:12px;white-space:nowrap;cursor:pointer;" onclick="copyWx()"><i class="fab fa-weixin"></i> 微信</span>
     <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:transparent;border:1px solid rgba(255,215,0,.25);color:rgba(255,215,0,.6);border-radius:8px;font-size:12px;white-space:nowrap;cursor:pointer;" onclick="dlCal()"><i class="far fa-calendar-plus"></i> 提醒</span>
   </div>
   <p style="margin-top:6px;font-size:10px;color:rgba(255,215,0,.35);text-align:center;">银川市金凤区新昌路蓝山公寓5楼521号 · 向左滑动查看更多</p>
