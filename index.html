@@ -382,48 +382,14 @@ window.addEventListener('DOMContentLoaded',function(){rS();});
 <!-- 二维码区域 -->
 <div id="qrArea" style="display:none;text-align:center;padding:20px 12px;margin-top:12px;">
   <div style="display:inline-block;background:#fff;padding:16px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);">
-    <canvas id="qrCanvas" width="220" height="220" style="display:block;margin:0 auto;"></canvas>
+    <img src="qrcode_nn.png" alt="预约二维码" style="width:220px;height:220px;display:block;margin:0 auto;">
     <p style="margin-top:10px;font-size:13px;color:#333;">扫一扫 · 在线预约</p>
     <p style="margin-top:6px;font-size:11px;color:#999;">https://jimquant1983.github.io/nadianjie/</p>
-    <a id="qrDl" href="#" download="拿捏社预约二维码.png" style="display:inline-block;margin-top:10px;padding:6px 20px;background:#ffd700;color:#000;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold;">📥 下载二维码</a>
+    <a href="qrcode_nn.png" download="拿捏社预约二维码.png" style="display:inline-block;margin-top:10px;padding:6px 20px;background:#ffd700;color:#000;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold;">📥 下载二维码</a>
   </div>
 </div>
 <div style="text-align:center;padding:6px 12px 16px;">
-  <span id="qrBtn" onclick="var q=document.getElementById('qrArea');q.style.display=q.style.display==='none'?'block':'none'" style="display:inline-block;padding:6px 16px;border:1px solid rgba(255,215,0,.3);border-radius:6px;color:rgba(255,215,0,.6);font-size:12px;cursor:pointer;">📱 生成二维码 · 推荐给更多的人</span>
+  <span onclick="var a=document.getElementById('qrArea');a.style.display=(a.style.display==='none'?'block':'none')" style="display:inline-block;padding:6px 16px;border:1px solid rgba(255,215,0,.3);border-radius:6px;color:rgba(255,215,0,.6);font-size:12px;cursor:pointer;">📱 生成二维码 · 推荐给更多的人</span>
 </div>
-<script src="qrcode.min.js"></script>
-<script>
-(function(){
-  var u='https://jimquant1983.github.io/nadianjie/';
-  var qr = new QRCode(document.createElement('div'), { text: u, width: 220, height: 220, correctLevel: QRCode.CorrectLevel.M });
-  var img = qr._el.querySelector('img');
-  var c = document.getElementById('qrCanvas');
-  var ctx = c.getContext('2d');
-  img.onload = function(){
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0,0,220,220);
-    ctx.drawImage(img, 0, 0, 220, 220);
-    var ls = 48;
-    var lx = (220-ls)/2;
-    var ly = (220-ls)/2;
-    ctx.fillStyle = '#ffd700';
-    ctx.fillRect(lx-2, ly-2, ls+4, ls+4);
-    ctx.fillStyle = '#0d0a06';
-    ctx.fillRect(lx, ly, ls, ls);
-    ctx.fillStyle = '#ffd700';
-    ctx.font = 'bold 18px sans-serif';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('NN', 110, 111);
-  };
-  document.getElementById('qrDl').addEventListener('click', function(e) {
-    var lnk = document.createElement('a');
-    lnk.download = '拿捏社预约二维码.png';
-    lnk.href = c.toDataURL('image/png');
-    lnk.click();
-  });
-})();
-</script>
-
 </body>
 </html>
