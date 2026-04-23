@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>拿捏社推拿工作室 - 在线预约</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI','Microsoft YaHei','PingFang SC',sans-serif;}
+body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex-start;justify-content:center;}
+.ct{max-width:420px;width:100%;margin:0 auto;position:relative;z-index:1;}
+
+/* ===== 头图区域 ===== */
+.header-banner{
+  position:relative;
+  width:100%;
+  height:200px;
+  overflow:hidden;
+  background:#0d0a06;
+  border-radius:0 0 24px 24px;
+  box-shadow:0 4px 30px rgba(0,0,0,.5);
+}
+.header-banner img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.header-banner .overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,transparent 40%,rgba(13,10,6,.85) 95%);
+}
+/* ===== 成功弹窗头图 ===== */
+.success-header{
+  width:calc(100% + 48px);
+  height:180px;
+  overflow:hidden;
+  border-radius:20px 20px 0 0;
+  position:relative;
+  margin-left:-24px;
+  margin-bottom:18px;
+}
+.success-header img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  background:#12100e;
+}
+
+/* ===== 主卡片区域 ===== */
+.main-card{
+  margin:-12px 12px 12px;
+  position:relative;
+  z-index:2;
+}
+.st{display:flex;justify-content:center;gap:10px;margin-bottom:14px;}
+.st .dt{width:10px;height:10px;border-radius:50%;background:#3a2a1a;transition:all .3s;border:1px solid rgba(255,215,0,.1);}
+.st .dt.act{background:linear-gradient(135deg,#c0392b,#d44500);box-shadow:0 0 8px rgba(192,57,43,.5);transform:scale(1.2);border-color:#d44500;}
+.st .dt.dn{background:rgba(255,215,0,.4);border-color:rgba(255,215,0,.2);}
+.pg{display:none;border-radius:18px;background:#12100e;padding:20px 16px;min-height:400px;border:1px solid rgba(255,215,0,.08);box-shadow:0 4px 24px rgba(0,0,0,.4);}
+.pg.act{display:block;}
+.pg .tt{font-size:1rem;font-weight:700;color:#f0d8b8;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.pg .tt i{color:#d44500;}
+/* 金色装饰条 */
+.pg .tt::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,215,0,.2),transparent);margin-left:8px;}
+
+/* ===== 服务项目卡片 ===== */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sb{background:linear-gradient(145deg,#1a1510,#0f0c0a);border:1px solid rgba(255,215,0,.1);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .25s;user-select:none;position:relative;overflow:hidden;}
+.sb::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,215,0,.03),transparent);pointer-events:none;}
+.sb:active{transform:scale(.96);}
+.sb.sel{background:linear-gradient(145deg,#1a0a00,#2d1200);border-color:#d44500;box-shadow:0 0 0 2px rgba(212,69,0,.2),inset 0 0 20px rgba(255,107,0,.05);}
+.sb .nm{font-weight:700;font-size:.95rem;color:#f0d8b8;}.sb .mt{font-size:.7rem;color:#8a7a6a;margin-top:2px;}.sb .pr{font-size:1.1rem;font-weight:800;color:#ff6b35;margin-top:4px;}
+
+/* ===== 日期选择 ===== */
+.ds{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}.ds::-webkit-scrollbar{display:none;}
+.di{flex-shrink:0;width:58px;padding:8px 4px;text-align:center;border:1px solid rgba(255,215,0,.12);border-radius:10px;cursor:pointer;transition:all .2s;background:#1a1510;}
+.di:active{transform:scale(.95);}.di.sel{background:linear-gradient(135deg,#c0392b,#d44500);border-color:#c0392b;color:#fff;}
+.di .dw{font-size:.62rem;color:#8a7a6a;}.di.sel .dw{color:rgba(255,255,255,.7);}.di .dy{font-size:1rem;font-weight:700;color:#e8d5b8;}.di.sel .dy{color:#fff;}
+.di .mo{font-size:.55rem;color:#6a5a4a;}.di.sel .mo{color:rgba(255,255,255,.6);}
+.th{font-size:.72rem;color:#8a7a6a;margin:8px 0 6px;}
+
+/* ===== 时间选择 ===== */
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.tc{padding:12px 4px;text-align:center;border:1px solid rgba(255,215,0,.12);border-radius:10px;cursor:pointer;transition:all .15s;font-size:.85rem;font-weight:500;user-select:none;background:#1a1510;color:#c0b0a0;}
+.tc:active:not(.ua):not(.fl){transform:scale(.95);}.tc:hover:not(.ua):not(.fl){border-color:#d44500;background:#2a1a10;color:#f0d8b8;}
+.tc.sel{background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;border-color:#c0392b;}
+.tc.ua{background:#0d0a06;color:#3a2a1a;cursor:not-allowed;text-decoration:line-through;}
+
+/* ===== 通用 ===== */
+.sb2{display:inline-block;background:#2a1a10;border-radius:20px;padding:6px 14px;font-size:.8rem;color:#c0b0a0;margin-bottom:12px;border:1px solid rgba(255,215,0,.08);}
+.sb2 strong{color:#d44500;}
+.sb2 i{color:#ffd700;}
+.ic{background:linear-gradient(145deg,#1a1510,#0f0c0a);border-radius:14px;padding:14px;border:1px solid rgba(255,215,0,.08);margin-bottom:14px;}
+.ic .rw{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:.85rem;}
+.ic .rw .l{color:#8a7a6a;}.ic .rw .r{font-weight:600;color:#e8d5b8;}.ic .rw .r.hl{color:#ff6b35;font-size:1.1rem;}
+.ic .dv{height:1px;background:rgba(255,215,0,.1);margin:6px 0;}
+.ig{margin-bottom:10px;}.ig input{width:100%;padding:12px 14px;border:1px solid rgba(255,215,0,.12);border-radius:10px;font-size:.9rem;transition:border .2s;background:#1a1510;color:#e8d5b8;}
+.ig input:focus{outline:none;border-color:#d44500;box-shadow:0 0 0 3px rgba(212,69,0,.1);}.ig input::placeholder{color:#5a4a3a;}
+.nv{display:flex;gap:8px;margin-top:14px;}
+.nb{flex:1;padding:13px;border:none;border-radius:12px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;text-align:center;}
+.nb:active{transform:scale(.97);}.nb.bk{background:#2a1a10;color:#8a7a6a;}
+.nb.nx{background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;box-shadow:0 3px 12px rgba(192,57,43,.25);}
+.nb.nx:disabled{background:#2a1a10;color:#5a4a3a;box-shadow:none;cursor:not-allowed;}
+.nb.sm{background:linear-gradient(135deg,#c0392b,#d44500,#e65c00);color:#fff;box-shadow:0 4px 15px rgba(192,57,43,.3);}
+.nb.sm:disabled{background:#2a1a10;color:#5a4a3a;box-shadow:none;cursor:not-allowed;}
+
+/* ===== 管理面板 ===== */
+.ad-st{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:12px;}
+.ad-st .s{background:linear-gradient(145deg,#1a1510,#0f0c0a);border-radius:10px;padding:10px 4px;text-align:center;border:1px solid rgba(255,215,0,.08);}
+.ad-st .s .n{font-size:1.1rem;font-weight:800;color:#d44500;}.ad-st .s .l{font-size:.58rem;color:#8a7a6a;margin-top:2px;}
+.al{max-height:300px;overflow-y:auto;}
+.ai{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid rgba(255,215,0,.06);font-size:.78rem;}
+.ai:last-child{border-bottom:none;}.ai .if{flex:1;min-width:0;}.ai .if .nm{font-weight:600;color:#e8d5b8;}
+.ai .if .dt{color:#8a7a6a;font-size:.72rem;margin-top:1px;}
+.bd{font-size:.62rem;padding:2px 8px;border-radius:8px;font-weight:600;white-space:nowrap;}
+.bd1{background:rgba(255,215,0,.08);color:#ffd700;border:1px solid rgba(255,215,0,.15);}
+.bd2{background:rgba(76,175,80,.08);color:#66bb6a;border:1px solid rgba(76,175,80,.15);}
+.bd3{background:rgba(100,100,255,.08);color:#7aaaff;border:1px solid rgba(100,100,255,.15);}
+.bd4{background:rgba(100,80,60,.08);color:#8a7a6a;border:1px solid rgba(100,80,60,.15);}
+.ai .ac{display:flex;gap:3px;flex-shrink:0;}.ai .ac button{padding:3px 6px;border:none;border-radius:5px;font-size:.62rem;cursor:pointer;}
+.ai .ac .ok{background:#c0392b;color:#fff;}.ai .ac .dn{background:#2d8a4e;color:#fff;}.ai .ac .no{background:#5a4a3a;color:#fff;}
+.pm{cursor:pointer;color:#8a7a6a;font-style:italic;border-bottom:1px dashed rgba(255,215,0,.15);}
+.pm.rv{color:#ffd700;font-style:normal;font-weight:600;border-bottom:none;}
+.em{text-align:center;padding:30px;color:#5a4a3a;font-size:.85rem;}.em i{font-size:2.5rem;margin-bottom:8px;}
+.tl{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center;}
+.tl select,.tl input{font-size:.75rem;padding:5px 8px;border:1px solid rgba(255,215,0,.12);border-radius:8px;background:#1a1510;color:#e8d5b8;}
+.tl select option{background:#1a1510;color:#e8d5b8;}
+.tl button{color:#e8d5b8;}
+
+/* ===== 底部栏 ===== */
+.cb{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 0 10px;font-size:.72rem;color:rgba(255,215,0,.3);flex-wrap:wrap;}
+.cb a{color:rgba(255,215,0,.5);text-decoration:none;border-bottom:1px dashed rgba(255,215,0,.15);}
+.cb i{color:#ffd700;}.cb .dv{width:1px;height:12px;background:rgba(255,215,0,.1);}
+.cb .rs{color:rgba(200,50,50,.4);border-bottom:none;font-size:.6rem;}
+
+/* ===== 弹窗 ===== */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:999;justify-content:center;align-items:center;padding:20px;}
+.ov.sh{display:flex;}
+.mod{background:#12100e;border-radius:20px;padding:30px 24px;max-width:380px;width:100%;text-align:center;animation:pop .35s ease;border:1px solid rgba(255,215,0,.1);position:relative;overflow:hidden;}
+.mod.suc-mod{padding:0 24px 30px;}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.mod h2{font-size:1.3rem;color:#f0d8b8;margin-bottom:4px;}
+.mod .sb{color:#8a7a6a;font-size:.85rem;margin-bottom:16px;}
+.mod .dtl{background:linear-gradient(145deg,#1a1510,#0f0c0a);border-radius:12px;padding:14px;text-align:left;font-size:.85rem;line-height:1.9;margin-bottom:16px;border:1px solid rgba(255,215,0,.08);color:#c0b0a0;}
+.mod .dtl strong{color:#ffd700;}
+.mod .cd{background:linear-gradient(135deg,#2d1200,#4a1a00);color:#ffd700;padding:5px 18px;border-radius:16px;display:inline-block;font-weight:700;letter-spacing:1px;margin-bottom:16px;font-size:.85rem;border:1px solid rgba(255,215,0,.15);}
+.mod .bt{background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;}
+.ld{background:#12100e;border-radius:16px;padding:36px;text-align:center;}
+.sp{width:36px;height:36px;border:3px solid rgba(255,215,0,.1);border-top:3px solid #d44500;border-radius:50%;animation:spi .8s linear infinite;margin:0 auto 12px;}
+@keyframes spi{to{transform:rotate(360deg)}}
+</style>
+</head>
+<body>
+
+<div class="ct">
+
+<!-- ===== 头图区域 ===== -->
+<div class="header-banner">
+  <img src="header_main.jpg" alt="拿捏社">
+  <div class="overlay"></div>
+</div>
+
+<div class="main-card">
+
+<div class="st" id="sts">
+<div class="dt act" id="dt1"></div><div class="dt" id="dt2"></div><div class="dt" id="dt3"></div><div class="dt" id="dt4"></div>
+</div>
+
+<!-- 页面1 价格 -->
+<div class="pg act" id="pg1">
+<div class="tt"><i class="fas fa-concierge-bell"></i> 选择服务项目</div>
+<div class="sg" id="sg"></div>
+<div class="nv"><div style="flex:1"></div><button class="nb nx" id="b1" onclick="go2(2)" disabled>选好了，下一步 <i class="fas fa-arrow-right"></i></button></div>
+</div>
+
+<!-- 页面2 日期时间 -->
+<div class="pg" id="pg2">
+<div class="tt"><i class="fas fa-calendar-day"></i> 选择日期和时间</div>
+<div><span class="sb2"><i class="fas fa-check-circle"></i> <span id="svb">请先选服务</span></span></div>
+<div class="ds" id="ds"></div>
+<div class="th"><i class="far fa-clock"></i> <span id="th">请选择日期</span></div>
+<div class="tg" id="tg"></div>
+<div class="nv"><button class="nb bk" onclick="go2(1)"><i class="fas fa-arrow-left"></i> 返回</button><button class="nb nx" id="b2" onclick="go2(3)" disabled>下一步 <i class="fas fa-arrow-right"></i></button></div>
+</div>
+
+<!-- 页面3 确认 -->
+<div class="pg" id="pg3">
+<div class="tt"><i class="fas fa-pen"></i> 确认并提交</div>
+<div class="ic">
+<div class="rw"><span class="l">服务项目</span><span class="r" id="c1">—</span></div>
+<div class="rw"><span class="l">服务时长</span><span class="r" id="c2">—</span></div>
+<div class="rw"><span class="l">预约日期</span><span class="r" id="c3">—</span></div>
+<div class="rw"><span class="l">到店时间</span><span class="r" id="c4">—</span></div>
+<div class="dv"></div>
+<div class="rw"><span class="l">合计费用</span><span class="r hl" id="c5">¥0</span></div>
+</div>
+<div style="font-size:.78rem;color:#8a7a6a;margin-bottom:8px;"><i class="fas fa-lock" style="color:#ffd700;"></i> 联系方式仅用于预约对接，已做隐私保护</div>
+<div class="ig"><input type="text" id="in1" placeholder="怎么称呼您？如 张先生"></div>
+<div class="ig"><input type="tel" id="in2" placeholder="手机号码"></div>
+<div class="nv"><button class="nb bk" onclick="go2(2)"><i class="fas fa-arrow-left"></i> 返回</button><button class="nb sm" id="b3" onclick="sub()" disabled>确认预约</button></div>
+</div>
+
+<!-- 页面4 管理 -->
+<div class="pg" id="pg4">
+<div class="tt"><i class="fas fa-list"></i> 预约管理 <a href="javascript:go2(1)" style="color:#d44500;font-size:.8rem;">← 预约登记</a></div>
+<div class="ad-st" id="adSt">
+<div class="s"><div class="n" id="st1">0</div><div class="l">总预约</div></div>
+<div class="s"><div class="n" id="st2">0</div><div class="l">今日</div></div>
+<div class="s"><div class="n" id="st3">0</div><div class="l">待确认</div></div>
+<div class="s"><div class="n" id="st4">0</div><div class="l">已完成</div></div>
+</div>
+<div class="tl">
+<select id="fs" onchange="ra()"><option value="all">全部</option><option value="待确认">待确认</option><option value="已确认">已确认</option><option value="已完成">已完成</option></select>
+<input type="date" id="fd" onchange="ra()">
+<button onclick="document.getElementById('fd').value='';ra()" style="padding:5px 8px;border:1px solid rgba(255,215,0,.12);border-radius:8px;background:#1a1510;color:#e8d5b8;cursor:pointer;font-size:.72rem;">✕</button>
+<button onclick="exp()" style="margin-left:auto;padding:6px 12px;border:none;border-radius:8px;background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;cursor:pointer;font-size:.7rem;"><i class="fas fa-download"></i> 导出</button>
+</div>
+<div class="al" id="al"><div class="em"><i class="far fa-folder-open"></i><p>暂无预约</p></div></div>
+<div class="nv">
+<button class="nb bk" onclick="go2(1)">返回预约</button>
+<button class="nb" style="background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;box-shadow:0 3px 8px rgba(192,57,43,.2);"><a href="tel:17049733788" style="border:none;color:#fff;"><i class="fas fa-phone-alt"></i> 电话</a></button>
+<button class="nb" style="background:linear-gradient(135deg,#2d8a4e,#1a6b3a);color:#fff;box-shadow:0 3px 8px rgba(0,100,0,.2);"><a href="weixin://dsf0951" style="border:none;color:#fff;"><i class="fab fa-weixin"></i> 微信</a></button>
+</div>
+</div>
+
+<div class="cb">
+<i class="fas fa-phone"></i> <a href="tel:17049733788">点击呼叫</a>
+<span class="dv"></span>
+<a href="weixin://dsf0951"><i class="fab fa-weixin"></i> 添加微信</a>
+<span class="dv"></span>
+<a href="javascript:go2(4)" style="border-bottom:none;color:rgba(255,215,0,.4);font-size:.68rem;"><i class="fas fa-cog"></i> 管理</a>
+<span class="dv"></span>
+<a href="javascript:rsAll()" class="rs"><i class="fas fa-undo"></i> 重置</a>
+</div>
+</div>
+
+<div class="ov" id="ldOv"><div class="ld"><div class="sp"></div><p style="color:#8a7a6a;font-size:.85rem;">正在提交预约…</p></div></div>
+<div class="ov" id="scOv">
+<div class="mod suc-mod">
+<div class="success-header">
+  <img src="logo_gold.png" alt="">
+</div>
+<h2>预约成功 🔥</h2>
+<p class="sb">预约已提交，请按时到店</p>
+<div class="cd" id="scCd">NN------</div>
+<div class="dtl" id="scDt"></div>
+<button class="bt" onclick="location.reload()"><i class="fas fa-redo"></i> 重新预约</button>
+</div>
+</div>
+
+<script>
+var sv=[
+{id:'s1',n:'肩颈按摩',d:20,p:88,m:'缓解肩颈酸痛'},
+{id:'s2',n:'腰背腿按摩',d:30,p:108,m:'放松腰背腿部'},
+{id:'s3',n:'全身按摩',d:40,p:128,m:'全身舒缓放松'},
+{id:'s4',n:'腰间盘专项',d:30,p:158,m:'腰间盘调理'},
+{id:'s5',n:'全身精细按摩',d:60,p:208,m:'深度放松'},
+{id:'s6',n:'男士筋骨养护',d:70,p:288,m:'男士专属调理'},
+{id:'s7',n:'女士温经通络',d:60,p:288,m:'暖宫通络'},
+{id:'s8',n:'北派全身正骨',d:10,p:100,m:'快速正骨调理'}
+];
+var BF=10,OP=10,CL=20,WK=['日','一','二','三','四','五','六'];
+function gb(){try{return JSON.parse(localStorage.getItem('nnB')||'[]')}catch(e){return[]}}
+function sb(d){var a=gb();a.push(d);localStorage.setItem('nnB',JSON.stringify(a));}
+function us(id,s){var a=gb();var i=a.findIndex(function(b){return b.id===id});if(i===-1)return;a[i].s=s;localStorage.setItem('nnB',JSON.stringify(a));}
+function gr(d){return gb().filter(function(b){return b.d===d&&b.s!=='已取消'}).map(function(b){return{st:tm(b.ts),en:tm(b.te)}});}
+function tm(t){var h=Number(t.split(':')[0]),m=Number(t.split(':')[1]);return h*60+m;}
+function tt(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
+function ov(s,e,rs){return rs.some(function(r){return s<r.en&&e>r.st;});}
+var ss=null,sd='',stm='';
+
+function go2(n){
+if(n===2){if(!ss){alert('请先选择服务');return;}rdD();rdT();}
+if(n===3){
+if(!stm){alert('请选择时间');return;}
+var s=sv.find(function(x){return x.id===ss});
+document.getElementById('c1').textContent=s.n;document.getElementById('c2').textContent=s.d+'分钟';
+document.getElementById('c3').textContent=sd;document.getElementById('c4').textContent=stm+' 到店';
+document.getElementById('c5').textContent='¥'+s.p;
+}
+if(n===4)ra();
+for(var i=1;i<=4;i++){
+var p=document.getElementById('pg'+i);p.classList.toggle('act',i===n);
+var dt=document.getElementById('dt'+i);dt.className='dt';
+if(i===n)dt.classList.add('act');else if(i<n)dt.classList.add('dn');
+}
+}
+
+function rS(){
+var g=document.getElementById('sg');g.innerHTML='';
+sv.forEach(function(s){
+var d=document.createElement('div');d.className='sb';d.dataset.id=s.id;
+d.innerHTML='<div class="nm">'+s.n+'</div><div class="mt">'+s.d+'分钟 · '+s.m+'</div><div class="pr">¥'+s.p+'</div>';
+d.addEventListener('click',function(){sC(s.id);});
+g.appendChild(d);});
+}
+function sC(id){
+ss=id;
+document.querySelectorAll('.sb').forEach(function(e){e.classList.toggle('sel',e.dataset.id===id);});
+document.getElementById('b1').disabled=false;
+var s=sv.find(function(x){return x.id===id});
+document.getElementById('svb').textContent=s.n+' ¥'+s.p;
+}
+function rdD(){
+var s=document.getElementById('ds');s.innerHTML='';var t=new Date();
+for(var i=1;i<=7;i++){var d=new Date(t);d.setDate(d.getDate()+i);var ds=d.toISOString().split('T')[0];
+var el=document.createElement('div');el.className='di';el.dataset.date=ds;
+el.innerHTML='<div class="dw">周'+WK[d.getDay()]+'</div><div class="dy">'+d.getDate()+'</div><div class="mo">'+(d.getMonth()+1)+'月</div>';
+el.addEventListener('click',function(){sd=this.dataset.date;document.querySelectorAll('.di').forEach(function(e){e.classList.toggle('sel',e.dataset.date===sd);});rdT();stm='';uB2();});
+s.appendChild(el);}
+var f=s.querySelector('.di');if(f)f.click();
+}
+function rdT(){
+var g=document.getElementById('tg');g.innerHTML='';
+if(!ss||!sd)return;
+var s=sv.find(function(x){return x.id===ss});var t=s.d+BF*2;var rs=gr(sd);
+var n=new Date();var ts=n.toISOString().split('T')[0];var is=(sd===ts);var nm=n.getHours()*60+n.getMinutes()+30;
+var h=document.getElementById('th');var ha=false;
+for(var m=OP*60;m+t<=CL*60;m+=30){var tm2=tt(m);var c=document.createElement('div');c.className='tc';c.textContent=tm2;c.dataset.time=tm2;
+if(is&&m<=nm)c.classList.add('ua');
+else if(ov(m,m+t,rs))c.classList.add('ua');
+else{ha=true;c.addEventListener('click',function(){stm=this.dataset.time;document.querySelectorAll('.tc').forEach(function(e){e.classList.toggle('sel',e.dataset.time===stm);});uB2();});}
+g.appendChild(c);}
+if(!ha){h.innerHTML='😅 该日已约满，请选择其他日期';g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:#ff6b35;padding:24px;background:#1a0a00;border-radius:10px;border:1px solid rgba(255,107,0,.2);">😅 该日已约满</div>';}
+else h.innerHTML='<i class="far fa-clock"></i> 可用时段如上';
+}
+function uB2(){document.getElementById('b2').disabled=!stm;}
+function cS(){
+var n=document.getElementById('in1').value.trim();
+var p=document.getElementById('in2').value.trim();
+document.getElementById('b3').disabled=!(ss&&sd&&stm&&n&&/^1(3[0-9]|4[5-9]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\d{8}$/.test(p));
+}
+document.getElementById('in1').addEventListener('input',cS);
+document.getElementById('in2').addEventListener('input',cS);
+
+function sub(){
+var n=document.getElementById('in1').value.trim();
+var p=document.getElementById('in2').value.trim();
+if(!n){alert('请输入您的称呼');return;}
+if(!/^1(3[0-9]|4[5-9]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\d{8}$/.test(p)){alert('请输入真实有效的手机号码');return;}
+var s=sv.find(function(x){return x.id===ss});var m=tm(stm);var now=new Date();
+var bid='NN'+now.getFullYear().toString().slice(-2)+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0');
+var d={id:bid,name:n,phone:p,d:sd,svc:s.n,dur:s.d,pr:s.p,ts:stm,te:tt(m+s.d+BF*2),ss:tt(m+BF),se:tt(m+BF+s.d),s:'待确认',ca:now.toLocaleString('zh-CN')};
+document.getElementById('ldOv').classList.add('sh');document.getElementById('b3').disabled=true;
+setTimeout(function(){sb(d);document.getElementById('ldOv').classList.remove('sh');scS(d);},1000);
+}
+function scS(d){
+document.getElementById('scCd').textContent='预约识别号 ' + d.id;
+document.getElementById('scDt').innerHTML='<strong>'+d.name+'</strong> 您好！<br><br>💆 项目：'+d.svc+'（'+d.dur+'分钟）<br>📅 日期：'+d.d+'<br>⏰ 到店时间：<strong>'+d.ts+'</strong><br>🕐 服务时间：'+d.ss+'-'+d.se+'<br>💰 费用：¥'+d.pr+'<br>📋 状态：待确认';
+document.getElementById('scOv').classList.add('sh');
+}
+function ra(){
+var l=gb(),fs=document.getElementById('fs').value,fd=document.getElementById('fd').value;
+var t=new Date().toISOString().split('T')[0];
+document.getElementById('st1').textContent=l.length;document.getElementById('st2').textContent=l.filter(function(b){return b.d===t}).length;
+document.getElementById('st3').textContent=l.filter(function(b){return b.s==='待确认'}).length;document.getElementById('st4').textContent=l.filter(function(b){return b.s==='已完成'}).length;
+var f=l;if(fs!=='all')f=f.filter(function(b){return b.s===fs});if(fd)f=f.filter(function(b){return b.d===fd});
+f.sort(function(a,b){if(a.d!==b.d)return b.d.localeCompare(a.d);return a.ts.localeCompare(b.ts);});
+var el=document.getElementById('al');
+if(f.length===0){el.innerHTML='<div class="em"><i class="far fa-folder-open"></i><p>暂无预约</p></div>';return;}
+el.innerHTML=f.map(function(b){
+var cl={'待确认':'bd1','已确认':'bd2','已完成':'bd3','已取消':'bd4'}[b.s]||'bd1';
+var mk=b.phone.slice(0,3)+'****'+b.phone.slice(-4);
+return '<div class="ai"><div class="if"><div class="nm">'+b.name+' <span class="pm" onclick="rv(\''+b.id+'\')" id="ph-'+b.id+'">'+mk+'</span></div><div class="dt">'+b.d+' '+b.ts+' · '+b.svc+'</div></div><span class="bd '+cl+'">'+b.s+'</span><div class="ac">'+(b.s==='待确认'?'<button class="ok" onclick="ud(\''+b.id+'\',\'已确认\')">✓</button>':'')+(b.s!=='已完成'&&b.s!=='已取消'?'<button class="dn" onclick="ud(\''+b.id+'\',\'已完成\')">✔</button>':'')+(b.s!=='已取消'?'<button class="no" onclick="ud(\''+b.id+'\',\'已取消\')">✕</button>':'')+'</div></div>';
+}).join('');
+}
+function ud(id,s2){if(!confirm('确定操作？'))return;us(id,s2);ra();}
+function rv(id){var el=document.getElementById('ph-'+id);if(!el||el.classList.contains('rv'))return;var b=gb().find(function(x){return x.id===id});if(!b)return;el.textContent=b.phone;el.classList.add('rv');setTimeout(function(){if(el.classList.contains('rv')){el.textContent=b.phone.slice(0,3)+'****'+b.phone.slice(-4);el.classList.remove('rv');}},8000);}
+function exp(){var l=gb();if(!l.length){alert('暂无记录');return;}var c='编号,称呼,电话,日期,到店时间,项目,时长,费用,状态,创建时间\n';l.forEach(function(b){c+=b.id+','+b.name+','+b.phone+','+b.d+','+b.ts+','+b.svc+','+b.dur+','+b.pr+','+b.s+','+b.ca+'\n';});var b=new Blob(['\uFEFF'+c],{type:'text/csv;charset=utf-8;'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='预约_'+new Date().toISOString().split('T')[0]+'.csv';a.click();URL.revokeObjectURL(a.href);}
+function rsAll(){localStorage.removeItem('nnB');ss=null;sd='';stm='';document.getElementById('in1').value='';document.getElementById('in2').value='';rS();document.getElementById('ds').innerHTML='';document.getElementById('tg').innerHTML='';document.getElementById('b1').disabled=true;document.getElementById('b2').disabled=true;document.getElementById('b3').disabled=true;document.getElementById('svb').textContent='请先选服务';document.getElementById('th').innerHTML='请选择日期';for(var i=1;i<=4;i++){document.getElementById('dt'+i).className='dt';}document.getElementById('dt1').classList.add('act');for(var i=1;i<=4;i++){document.getElementById('pg'+i).classList.toggle('act',i===1);}document.getElementById('c1').textContent='—';document.getElementById('c2').textContent='—';document.getElementById('c3').textContent='—';document.getElementById('c4').textContent='—';document.getElementById('c5').textContent='¥0';}
+window.addEventListener('DOMContentLoaded',function(){rS();});
+</script>
+
+<!-- 底部广告栏 -->
+<div style="text-align:center;padding:16px 12px;margin-top:20px;border-top:1px solid rgba(255,215,0,.15);background:linear-gradient(135deg,rgba(255,215,0,.03),rgba(255,215,0,.08));font-size:13px;color:rgba(255,215,0,.7);letter-spacing:.5px;">
+  📱 同款预约网页或更多功能定制 · 请联系微信 <strong style="color:#ffd700;">DSF0951</strong>
+</div>
+
+</body>
+</html>
