@@ -1,2 +1,811 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>拿捏社推拿工作室 - 在线预约</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Segoe UI','Microsoft YaHei','PingFang SC',sans-serif;}
+body{background:#0d0a06;min-height:100vh;padding:0;display:flex;align-items:flex-start;justify-content:center;}
+.ct{max-width:420px;width:100%;margin:0 auto;position:relative;z-index:1;}
+
+/* ===== 头图区域 ===== */
+.header-banner{
+  position:relative;
+  width:100%;
+  height:200px;
+  overflow:hidden;
+  background:#0d0a06;
+  border-radius:0 0 24px 24px;
+  box-shadow:0 4px 30px rgba(0,0,0,.5);
+}
+.header-banner img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+.header-banner .overlay{
+  position:absolute;
+  inset:0;
+  background:linear-gradient(180deg,transparent 40%,rgba(13,10,6,.85) 95%);
+}
+/* ===== 成功弹窗头图 ===== */
+.success-header{
+  width:calc(100% + 48px);
+  height:180px;
+  overflow:hidden;
+  border-radius:20px 20px 0 0;
+  position:relative;
+  margin-left:-24px;
+  margin-bottom:18px;
+}
+.success-header img{
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  display:block;
+  background:#12100e;
+}
+
+/* ===== 主卡片区域 ===== */
+.main-card{
+  margin:-12px 12px 12px;
+  position:relative;
+  z-index:2;
+}
+.st{display:flex;justify-content:center;gap:10px;margin-bottom:14px;}
+.st .dt{width:10px;height:10px;border-radius:50%;background:#3a2a1a;transition:all .3s;border:1px solid rgba(255,215,0,.1);}
+.st .dt.act{background:linear-gradient(135deg,#c0392b,#d44500);box-shadow:0 0 8px rgba(192,57,43,.5);transform:scale(1.2);border-color:#d44500;}
+.st .dt.dn{background:rgba(255,215,0,.4);border-color:rgba(255,215,0,.2);}
+.pg{display:none;border-radius:18px;background:#12100e;padding:20px 16px;min-height:400px;border:1px solid rgba(255,215,0,.08);box-shadow:0 4px 24px rgba(0,0,0,.4);}
+.pg.act{display:block;}
+.pg .tt{font-size:1rem;font-weight:700;color:#f0d8b8;margin-bottom:12px;display:flex;align-items:center;gap:6px;}
+.pg .tt i{color:#d44500;}
+/* 金色装饰条 */
+.pg .tt::after{content:'';flex:1;height:1px;background:linear-gradient(90deg,rgba(255,215,0,.2),transparent);margin-left:8px;}
+
+/* ===== 服务项目卡片 ===== */
+.sg{display:grid;grid-template-columns:1fr 1fr;gap:8px;}
+.sb{background:linear-gradient(145deg,#1a1510,#0f0c0a);border:1px solid rgba(255,215,0,.1);border-radius:12px;padding:14px 10px;text-align:center;cursor:pointer;transition:all .25s;user-select:none;position:relative;overflow:hidden;}
+.sb::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(255,215,0,.03),transparent);pointer-events:none;}
+.sb:active{transform:scale(.96);}
+.sb.sel{background:linear-gradient(145deg,#1a0a00,#2d1200);border-color:#d44500;box-shadow:0 0 0 2px rgba(212,69,0,.2),inset 0 0 20px rgba(255,107,0,.05);}
+.sb .nm{font-weight:700;font-size:.95rem;color:#f0d8b8;}.sb .mt{font-size:.7rem;color:#8a7a6a;margin-top:2px;}.sb .pr{font-size:1.1rem;font-weight:800;color:#ff6b35;margin-top:4px;}
+
+/* ===== 日期选择 ===== */
+.ds{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}.ds::-webkit-scrollbar{display:none;}
+.di{flex-shrink:0;width:58px;padding:8px 4px;text-align:center;border:1px solid rgba(255,215,0,.12);border-radius:10px;cursor:pointer;transition:all .2s;background:#1a1510;}
+.di:active{transform:scale(.95);}.di.sel{background:linear-gradient(135deg,#c0392b,#d44500);border-color:#c0392b;color:#fff;}
+.di .dw{font-size:.62rem;color:#8a7a6a;}.di.sel .dw{color:rgba(255,255,255,.7);}.di .dy{font-size:1rem;font-weight:700;color:#e8d5b8;}.di.sel .dy{color:#fff;}
+.di .mo{font-size:.55rem;color:#6a5a4a;}.di.sel .mo{color:rgba(255,255,255,.6);}
+.th{font-size:.72rem;color:#8a7a6a;margin:8px 0 6px;}
+
+/* ===== 时间选择 ===== */
+.tg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;}
+.tc{padding:12px 4px;text-align:center;border:1px solid rgba(255,215,0,.12);border-radius:10px;cursor:pointer;transition:all .15s;font-size:.85rem;font-weight:500;user-select:none;background:#1a1510;color:#c0b0a0;}
+.tc:active:not(.ua):not(.fl){transform:scale(.95);}.tc:hover:not(.ua):not(.fl){border-color:#d44500;background:#2a1a10;color:#f0d8b8;}
+.tc.sel{background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;border-color:#c0392b;}
+.tc.ua{background:#0d0a06;color:#3a2a1a;cursor:not-allowed;text-decoration:line-through;}
+
+/* ===== 通用 ===== */
+.sb2{display:inline-block;background:#2a1a10;border-radius:20px;padding:6px 14px;font-size:.8rem;color:#c0b0a0;margin-bottom:12px;border:1px solid rgba(255,215,0,.08);}
+.sb2 strong{color:#d44500;}
+.sb2 i{color:#ffd700;}
+.ic{background:linear-gradient(145deg,#1a1510,#0f0c0a);border-radius:14px;padding:14px;border:1px solid rgba(255,215,0,.08);margin-bottom:14px;}
+.ic .rw{display:flex;justify-content:space-between;align-items:center;padding:4px 0;font-size:.85rem;}
+.ic .rw .l{color:#8a7a6a;}.ic .rw .r{font-weight:600;color:#e8d5b8;}.ic .rw .r.hl{color:#ff6b35;font-size:1.1rem;}
+.ic .dv{height:1px;background:rgba(255,215,0,.1);margin:6px 0;}
+.ig{margin-bottom:10px;}.ig input{width:100%;padding:12px 14px;border:1px solid rgba(255,215,0,.12);border-radius:10px;font-size:.9rem;transition:border .2s;background:#1a1510;color:#e8d5b8;}
+.ig input:focus{outline:none;border-color:#d44500;box-shadow:0 0 0 3px rgba(212,69,0,.1);}.ig input::placeholder{color:#5a4a3a;}
+.nv{display:flex;gap:8px;margin-top:14px;}
+.nb{flex:1;padding:13px;border:none;border-radius:12px;font-size:.9rem;font-weight:600;cursor:pointer;transition:all .2s;text-align:center;}
+.nb:active{transform:scale(.97);}.nb.bk{background:#2a1a10;color:#8a7a6a;}
+.nb.nx{background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;box-shadow:0 3px 12px rgba(192,57,43,.25);}
+.nb.nx:disabled{background:#2a1a10;color:#5a4a3a;box-shadow:none;cursor:not-allowed;}
+.nb.sm{background:linear-gradient(135deg,#c0392b,#d44500,#e65c00);color:#fff;box-shadow:0 4px 15px rgba(192,57,43,.3);}
+.nb.sm:disabled{background:#2a1a10;color:#5a4a3a;box-shadow:none;cursor:not-allowed;}
+
+/* ===== 管理看板-时间轴 ===== */
+.ad-hd{font-size:.85rem;color:#f0d8b8;margin-bottom:6px;display:flex;align-items:center;gap:6px;}
+.ad-hd i{color:#d44500;}
+.ad-hd .ad-sel{font-size:.72rem;color:#8a7a6a;margin-left:auto;}
+.ad-days{display:flex;gap:4px;overflow-x:auto;padding-bottom:8px;scrollbar-width:none;margin-bottom:6px;}
+.ad-days::-webkit-scrollbar{display:none;}
+.ad-days .ad-d{flex-shrink:0;padding:6px 14px;border-radius:8px;font-size:.78rem;border:1px solid rgba(255,215,0,.1);background:#1a1510;color:#c0b0a0;cursor:pointer;text-align:center;}
+.ad-days .ad-d.sel{background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;border-color:#c0392b;}
+.ad-days .ad-d .ad-we{font-size:.6rem;opacity:.6;}
+.ad-sum{display:flex;gap:8px;margin-bottom:10px;flex-wrap:wrap;}
+.ad-sum .s{background:#1a1510;border-radius:8px;padding:6px 12px;text-align:center;flex:1;min-width:60px;border:1px solid rgba(255,215,0,.06);}
+.ad-sum .s .n{font-size:1rem;font-weight:700;color:#d44500;}
+.ad-sum .s .l{font-size:.55rem;color:#8a7a6a;}
+.ad-tl{position:relative;padding-left:48px;min-height:200px;}
+.ad-tl::before{content:'';position:absolute;left:38px;top:0;bottom:0;width:2px;background:rgba(255,215,0,.1);}
+.ad-sl{position:relative;margin-bottom:2px;min-height:32px;}
+.ad-sl .ad-tm{position:absolute;left:-48px;top:4px;width:40px;text-align:right;font-size:.62rem;color:#6a5a4a;line-height:24px;}
+.ad-sl .ad-bar{display:block;border-radius:6px;padding:2px 10px;font-size:.72rem;line-height:24px;cursor:pointer;transition:all .15s;position:relative;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;}
+.ad-sl .ad-bar.free{background:rgba(40,80,40,.15);border:1px dashed rgba(76,175,80,.2);color:rgba(76,175,80,.5);cursor:pointer;}
+.ad-sl .ad-bar.free:active{background:rgba(40,80,40,.3);}
+.ad-sl .ad-bar.booked{background:linear-gradient(90deg,rgba(192,57,43,.25),rgba(212,69,0,.15));border:1px solid rgba(212,69,0,.25);color:#d44500;font-weight:500;}
+.ad-sl .ad-bar.booked:active{background:rgba(192,57,43,.4);}
+.ad-sl .ad-bar.mine{background:linear-gradient(90deg,rgba(255,215,0,.1),rgba(255,215,0,.05));border:1px solid rgba(255,215,0,.15);color:#ffd700;}
+.ad-sl .ad-bar .ad-dot{display:inline-block;width:6px;height:6px;border-radius:50%;margin-right:6px;vertical-align:middle;}
+.ad-sl .ad-bar.free .ad-dot{background:rgba(76,175,80,.4);}
+.ad-sl .ad-bar.booked .ad-dot{background:#d44500;}
+/* 预约详情弹出条 */
+.ad-detail{display:none;background:#1a1510;border-radius:8px;padding:8px 10px;margin:2px 0 4px 10px;border:1px solid rgba(255,215,0,.08);font-size:.72rem;line-height:1.6;border-left:3px solid #d44500;}
+.ad-detail.sh{display:block;}
+.ad-detail .nm{font-weight:600;color:#f0d8b8;}
+.ad-detail .info{color:#8a7a6a;}
+.ad-detail .info .ph{cursor:pointer;border-bottom:1px dashed rgba(255,215,0,.2);color:#8a7a6a;}
+.ad-detail .info .ph.rv{color:#ffd700;}
+.ad-detail .ac{display:flex;gap:6px;margin-top:4px;}
+.ad-detail .ac button{padding:3px 12px;border:none;border-radius:5px;font-size:.65rem;cursor:pointer;}
+.ad-detail .ac .ok{background:#2d8a4e;color:#fff;}
+.ad-detail .ac .no{background:#5a4a3a;color:#fff;}
+/* 手动添加弹窗 */
+.add-form{padding:0 2px;}
+.add-form .row{margin-bottom:8px;text-align:left;}
+.add-form .row label{display:block;font-size:.72rem;color:#8a7a6a;margin-bottom:2px;}
+.add-form .row input,.add-form .row select{width:100%;padding:8px 10px;border:1px solid rgba(255,215,0,.12);border-radius:8px;font-size:.82rem;background:#1a1510;color:#e8d5b8;outline:none;}
+.add-form .row input:focus,.add-form .row select:focus{border-color:#d44500;}
+.add-form .row select option{background:#1a1510;color:#e8d5b8;}
+.em{text-align:center;padding:30px;color:#5a4a3a;font-size:.85rem;}.em i{font-size:2.5rem;margin-bottom:8px;}
+
+/* ===== 底部栏 ===== */
+.cb{display:flex;align-items:center;justify-content:center;gap:10px;padding:16px 0 10px;font-size:.72rem;color:rgba(255,215,0,.3);flex-wrap:wrap;}
+.cb a{color:rgba(255,215,0,.5);text-decoration:none;border-bottom:1px dashed rgba(255,215,0,.15);}
+.cb i{color:#ffd700;}.cb .dv{width:1px;height:12px;background:rgba(255,215,0,.1);}
+
+/* ===== 管理员密码弹窗 ===== */
+.ap{max-width:320px;}
+.ap h2{font-size:1.1rem;color:#ffd700;margin-bottom:6px;}
+.ap .sb2{color:#8a7a6a;font-size:.8rem;margin-bottom:14px;}
+.pwi{width:100%;padding:12px 14px;border:1px solid rgba(255,215,0,.15);border-radius:10px;font-size:1.1rem;letter-spacing:4px;text-align:center;background:#1a1510;color:#e8d5b8;outline:none;margin-bottom:10px;}
+.pwi:focus{border-color:#d44500;box-shadow:0 0 0 3px rgba(212,69,0,.1);}
+.pwr{margin-bottom:12px;font-size:.72rem;color:#c0392b;min-height:20px;text-align:center;}
+.adb{width:100%;padding:12px;border:none;border-radius:10px;font-size:.9rem;font-weight:600;cursor:pointer;background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;}
+.adb:active{transform:scale(.97);}
+
+/* ===== 弹窗 ===== */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);backdrop-filter:blur(4px);z-index:999;justify-content:center;align-items:center;padding:20px;}
+.ov.sh{display:flex;}
+.mod{background:#12100e;border-radius:20px;padding:30px 24px;max-width:380px;width:100%;text-align:center;animation:pop .35s ease;border:1px solid rgba(255,215,0,.1);position:relative;overflow:hidden;}
+.mod.suc-mod{padding:0 24px 30px;}
+@keyframes pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+.mod h2{font-size:1.3rem;color:#f0d8b8;margin-bottom:4px;}
+.mod .sb{color:#8a7a6a;font-size:.85rem;margin-bottom:16px;}
+.mod .dtl{background:linear-gradient(145deg,#1a1510,#0f0c0a);border-radius:12px;padding:14px;text-align:left;font-size:.85rem;line-height:1.9;margin-bottom:16px;border:1px solid rgba(255,215,0,.08);color:#c0b0a0;}
+.mod .dtl strong{color:#ffd700;}
+.mod .cd{background:linear-gradient(135deg,#2d1200,#4a1a00);color:#ffd700;padding:5px 18px;border-radius:16px;display:inline-block;font-weight:700;letter-spacing:1px;margin-bottom:16px;font-size:.85rem;border:1px solid rgba(255,215,0,.15);}
+.mod .bt{background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;border:none;padding:12px 30px;border-radius:10px;font-size:.95rem;font-weight:600;cursor:pointer;}
+.ld{background:#12100e;border-radius:16px;padding:36px;text-align:center;}
+.sp{width:36px;height:36px;border:3px solid rgba(255,215,0,.1);border-top:3px solid #d44500;border-radius:50%;animation:spi .8s linear infinite;margin:0 auto 12px;}
+@keyframes spi{to{transform:rotate(360deg)}}
+
+
+/* ===== 成功弹窗 ===== */
+.success-header{width:100%;height:50px;overflow:hidden;border-radius:16px 16px 0 0;margin-bottom:8px;}
+.success-header img{width:100%;height:100%;object-fit:cover;display:block;}
+.mod.suc-mod{padding:0 20px 18px;}
+.suc-mod h2{text-align:center;color:#ffd700;margin:8px 0 2px;font-size:1rem;}
+.suc-mod .sb{text-align:center;color:rgba(255,215,0,.5);font-size:.75rem;margin-bottom:4px;}
+.suc-mod .cd{text-align:center;font-size:.8rem;letter-spacing:1px;color:rgba(255,215,0,.8);margin-bottom:6px;}
+.suc-mod .dtl{text-align:left;font-size:.75rem;color:rgba(255,215,0,.55);line-height:1.4;margin-bottom:4px;}
+</style>
+</head>
+<body>
+
+<div class="ct">
+
+<!-- ===== 头图区域 ===== -->
+<div class="header-banner">
+  <img src="header_main.jpg" alt="拿捏社">
+  <div class="overlay"></div>
+</div>
+
+<div class="main-card">
+
+<div class="st" id="sts">
+<div class="dt act" id="dt1"></div><div class="dt" id="dt2"></div><div class="dt" id="dt3"></div><div class="dt" id="dt4"></div>
+</div>
+
+<!-- 页面1 价格 -->
+<div class="pg act" id="pg1">
+<div class="tt"><i class="fas fa-concierge-bell"></i> 选择服务项目</div>
+<div class="sg" id="sg"></div>
+<div class="nv"><div style="flex:1"></div><button class="nb nx" id="b1" onclick="go2(2)" disabled>选好了，下一步 <i class="fas fa-arrow-right"></i></button></div>
+</div>
+
+<!-- 页面2 日期时间 -->
+<div class="pg" id="pg2">
+<div class="tt"><i class="fas fa-calendar-day"></i> 选择日期和时间</div>
+<div><span class="sb2"><i class="fas fa-check-circle"></i> <span id="svb">请先选服务</span></span></div>
+<div class="ds" id="ds"></div>
+<div class="th"><i class="far fa-clock"></i> <span id="th">请选择日期</span></div>
+<div class="tg" id="tg"></div>
+<div class="nv"><button class="nb bk" onclick="go2(1)"><i class="fas fa-arrow-left"></i> 返回</button><button class="nb nx" id="b2" onclick="go2(3)" disabled>下一步 <i class="fas fa-arrow-right"></i></button></div>
+</div>
+
+<!-- 页面3 确认 -->
+<div class="pg" id="pg3">
+<div class="tt"><i class="fas fa-pen"></i> 确认并提交</div>
+<div class="ic">
+<div class="rw"><span class="l">服务项目</span><span class="r" id="c1">—</span></div>
+<div class="rw"><span class="l">服务时长</span><span class="r" id="c2">—</span></div>
+<div class="rw"><span class="l">预约日期</span><span class="r" id="c3">—</span></div>
+<div class="rw"><span class="l">到店时间</span><span class="r" id="c4">—</span></div>
+<div class="dv"></div>
+<div class="rw"><span class="l">合计费用</span><span class="r hl" id="c5">¥0</span></div>
+</div>
+<div style="font-size:.78rem;color:#8a7a6a;margin-bottom:8px;"><i class="fas fa-lock" style="color:#ffd700;"></i> 联系方式仅用于预约对接，已做隐私保护</div>
+<div class="ig"><input type="text" id="in1" placeholder="怎么称呼您？如 张先生"></div>
+<div class="ig"><input type="tel" id="in2" placeholder="手机号码"></div>
+<div class="nv"><button class="nb bk" onclick="go2(2)"><i class="fas fa-arrow-left"></i> 返回</button><button class="nb sm" id="b3" onclick="sub()" disabled>确认预约</button></div>
+</div>
+
+<!-- 页面4 管理看板（隐藏入口：底部连点5次"用心服务"文字） -->
+<div class="pg" id="pg4">
+<div class="ad-hd"><i class="fas fa-chart-bar"></i> 预约看板 <span class="ad-sel"><a href="javascript:go2(1)" style="color:#d44500;text-decoration:none;font-size:.72rem;">← 预约登记</a></span></div>
+
+<!-- 日期切换 -->
+<div class="ad-days" id="adDays"></div>
+
+<!-- 统计概览 -->
+<div class="ad-sum" id="adSum">
+  <div class="s"><div class="n" id="adTot">0</div><div class="l">总预约</div></div>
+  <div class="s"><div class="n" id="adBkd">0</div><div class="l">已预约</div></div>
+  <div class="s"><div class="n" id="adFree">0</div><div class="l">空闲时段</div></div>
+</div>
+
+<!-- 时间轴 -->
+<div class="ad-tl" id="adTl">
+  <div class="em"><i class="far fa-clock"></i><p>加载中…</p></div>
+</div>
+
+<!-- 底部按钮 -->
+<div class="nv" style="margin-top:6px;">
+<button class="nb bk" onclick="go2(1)" style="flex:0;padding:8px 16px;font-size:.75rem;"><i class="fas fa-arrow-left"></i> 返回</button>
+<button class="nb" style="flex:0;padding:8px 16px;font-size:.75rem;background:linear-gradient(135deg,#2d8a4e,#1a6b3a);color:#fff;" onclick="shAd()"><i class="fas fa-plus"></i> 手动添加</button>
+<button class="nb" style="flex:0;padding:8px 16px;font-size:.75rem;background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;" onclick="exp()"><i class="fas fa-download"></i> 导出</button>
+</div>
+</div>
+
+<div class="cb" id="footerBar">
+<i class="fas fa-phone"></i> <a href="tel:17049733788">点击呼叫</a>
+<span class="dv"></span>
+<a href="javascript:copyWx()"><i class="fab fa-weixin"></i> 添加微信 DSF0951</a>
+<span class="dv"></span>
+<span id="adminTrigger" style="cursor:default;color:rgba(255,215,0,.2);font-size:.62rem;user-select:none;">拿捏社 · 用心服务</span>
+</div>
+</div>
+
+<div class="ov" id="ldOv"><div class="ld"><div class="sp"></div><p style="color:#8a7a6a;font-size:.85rem;">正在提交预约…</p></div></div>
+<div class="ov" id="scOv">
+<div class="mod suc-mod">
+<div class="success-header">
+  <img src="logo_gold.png" alt="">
+</div>
+<h2>预约成功 🔥</h2>
+<p class="sb">预约已提交，请按时到店</p>
+<div class="cd" id="scCd">预约识别号 NN------</div>
+<div class="dtl" id="scDt"></div>
+<div style="margin:14px 0 10px;border-top:1px solid rgba(255,215,0,.12);padding-top:12px;">
+  <div style="display:flex;gap:8px;justify-content:center;flex-wrap:nowrap;overflow-x:auto;padding:0 0 4px;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+    <a href="https://uri.amap.com/marker?position=106.26668,38.47088&name=拿捏社推拿工作室&src=web" target="_blank" rel="noopener" style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:#1677ff;color:#fff;border-radius:8px;text-decoration:none;font-size:12px;white-space:nowrap;"><svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> 高德</a>
+    <a href="https://api.map.baidu.com/place/search?query=拿捏社推拿工作室&location=38.47088,106.26668&radius=1000&output=html&src=web" target="_blank" rel="noopener" style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:#2932e1;color:#fff;border-radius:8px;text-decoration:none;font-size:12px;white-space:nowrap;"><svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> 百度</a>
+    <a href="https://apis.map.qq.com/uri/v1/marker?marker=coord:38.47088,106.26668;title:拿捏社推拿工作室&referer=myapp" target="_blank" rel="noopener" style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:#00b5ff;color:#fff;border-radius:8px;text-decoration:none;font-size:12px;white-space:nowrap;"><svg style="width:14px;height:14px;fill:currentColor" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg> 腾讯</a>
+    <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:linear-gradient(135deg,#c0392b,#d44500);color:#fff;border-radius:8px;font-size:12px;white-space:nowrap;"><a href="tel:17049733788" style="color:#fff;text-decoration:none;"><i class="fas fa-phone-alt"></i> 呼叫</a></span>
+    <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:linear-gradient(135deg,#2d8a4e,#1a6b3a);color:#fff;border-radius:8px;font-size:12px;white-space:nowrap;cursor:pointer;" onclick="copyWx()"><i class="fab fa-weixin"></i> 微信</span>
+    <span style="flex-shrink:0;display:inline-flex;align-items:center;gap:4px;padding:7px 14px;background:transparent;border:1px solid rgba(255,215,0,.25);color:rgba(255,215,0,.6);border-radius:8px;font-size:12px;white-space:nowrap;cursor:pointer;" onclick="dlCal()"><i class="far fa-calendar-plus"></i> 提醒</span>
+  </div>
+  <p style="margin-top:6px;font-size:10px;color:rgba(255,215,0,.35);text-align:center;">银川市金凤区新昌路蓝山公寓5楼521号 · 向左滑动查看更多</p>
+</div>
+<button class="bt" onclick="location.reload()"><i class="fas fa-redo"></i> 重新预约</button>
+</div>
+</div>
+
+<!-- ===== 管理员登录弹窗（隐藏） ===== -->
+<div class="ov" id="adOv">
+<div class="mod ap">
+<h2><i class="fas fa-lock"></i> 管理员验证</h2>
+<p class="sb2">请输入管理密码以进入后台</p>
+<input type="password" class="pwi" id="adPw" placeholder="输入密码" maxlength="20" autocomplete="off" onkeydown="if(event.key==='Enter')chAd()">
+<div class="pwr" id="adPwr"></div>
+<div style="display:flex;gap:8px;">
+<button class="adb" style="background:#2a1a10;color:#8a7a6a;" onclick="clAd()">取消</button>
+<button class="adb" id="adBtn" onclick="chAd()">验证</button>
+</div>
+</div>
+</div>
+
+<!-- ===== 手动添加预约弹窗 ===== -->
+<div class="ov" id="adAddOv">
+<div class="mod ap">
+<h2><i class="fas fa-plus-circle" style="color:#2d8a4e;"></i> 手动添加预约</h2>
+<p class="sb2">用于电话预约或线下登记</p>
+<div class="add-form">
+  <div class="row"><label>称呼</label><input type="text" id="adName" placeholder="如 王先生"></div>
+  <div class="row"><label>手机号</label><input type="tel" id="adPhone" placeholder="手机号码"></div>
+  <div class="row"><label>日期</label><input type="date" id="adDate"></div>
+  <div class="row"><label>到店时间</label><select id="adTime"><option value="">请选择…</option></select></div>
+  <div class="row"><label>服务项目</label><select id="adSvc"><option value="">请选择…</option></select></div>
+</div>
+<div class="pwr" id="adAddErr" style="color:#2d8a4e;"></div>
+<div style="display:flex;gap:8px;">
+<button class="adb" style="background:#2a1a10;color:#8a7a6a;" onclick="clAdAdd()">取消</button>
+<button class="adb" style="background:linear-gradient(135deg,#2d8a4e,#1a6b3a);" onclick="doAdAdd()">确认添加</button>
+</div>
+</div>
+</div>
+
+<script>
+var sv=[
+{id:'s1',n:'肩颈按摩',d:20,p:88,m:'缓解肩颈酸痛'},
+{id:'s2',n:'腰背腿按摩',d:30,p:108,m:'放松腰背腿部'},
+{id:'s3',n:'全身按摩',d:40,p:128,m:'全身舒缓放松'},
+{id:'s4',n:'腰间盘专项',d:30,p:158,m:'腰间盘调理'},
+{id:'s5',n:'全身精细按摩',d:60,p:208,m:'深度放松'},
+{id:'s6',n:'男士筋骨养护',d:70,p:288,m:'男士专属调理'},
+{id:'s7',n:'女士温经通络',d:60,p:288,m:'暖宫通络'},
+{id:'s8',n:'北派全身正骨',d:10,p:100,m:'快速正骨调理'}
+];
+var BF=10,OP=10,CL=20,WK=['日','一','二','三','四','五','六'];
+
+/* ===== 管理员隐藏入口相关 ===== */
+var ADMIN_PASSWORD='833100';     // 管理员密码（可修改）
+var AD_CLICK_COUNT=0;            // 点击计数
+var AD_CLICK_TIMER=null;         // 重置计时器
+var AD_AUTHED=false;             // 是否已验证
+
+function gb(){try{return JSON.parse(localStorage.getItem('nnB')||'[]')}catch(e){return[]}}
+function sb(d){var a=gb();a.push(d);localStorage.setItem('nnB',JSON.stringify(a));}
+function us(id,s){var a=gb();var i=a.findIndex(function(b){return b.id===id});if(i===-1)return;a[i].s=s;localStorage.setItem('nnB',JSON.stringify(a));}
+function gr(d){return gb().filter(function(b){return b.d===d&&b.s!=='已取消'}).map(function(b){return{st:tm(b.ts),en:tm(b.te)}});}
+function tm(t){var h=Number(t.split(':')[0]),m=Number(t.split(':')[1]);return h*60+m;}
+function tt(m){return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0');}
+function ov(s,e,rs){return rs.some(function(r){return s<r.en&&e>r.st;});}
+var ss=null,sd='',stm='';
+
+/* ===== 管理员隐藏入口：连点5次弹出密码框 ===== */
+function initAdminTrigger(){
+  var el=document.getElementById('adminTrigger');
+  if(!el)return;
+  el.addEventListener('click',function(){
+    AD_CLICK_COUNT++;
+    if(AD_CLICK_TIMER)clearTimeout(AD_CLICK_TIMER);
+    AD_CLICK_TIMER=setTimeout(function(){AD_CLICK_COUNT=0;},2000);
+    if(AD_CLICK_COUNT>=5){
+      AD_CLICK_COUNT=0;
+      // 检查是否已认证（localStorage记录）
+      var authed=localStorage.getItem('nnAdminAuthed');
+      if(authed==='1'){
+        go2(4);
+      }else{
+        document.getElementById('adPw').value='';
+        document.getElementById('adPwr').textContent='';
+        document.getElementById('adOv').classList.add('sh');
+        setTimeout(function(){document.getElementById('adPw').focus();},100);
+      }
+    }
+  });
+}
+
+function chAd(){
+  var pw=document.getElementById('adPw').value.trim();
+  var errEl=document.getElementById('adPwr');
+  if(!pw){errEl.textContent='请输入管理密码';return;}
+  if(pw===ADMIN_PASSWORD){
+    localStorage.setItem('nnAdminAuthed','1');
+    AD_AUTHED=true;
+    document.getElementById('adOv').classList.remove('sh');
+    go2(4);
+  }else{
+    errEl.textContent='密码错误，请重试';
+    document.getElementById('adPw').value='';
+    document.getElementById('adPw').focus();
+  }
+}
+
+function clAd(){
+  document.getElementById('adOv').classList.remove('sh');
+  document.getElementById('adPw').value='';
+  document.getElementById('adPwr').textContent='';
+}
+
+/* ===== 页面切换 ===== */
+function go2(n){
+if(n===2){if(!ss){alert('请先选择服务');return;}rdD();rdT();}
+if(n===3){
+if(!stm){alert('请选择时间');return;}
+var s=sv.find(function(x){return x.id===ss});
+document.getElementById('c1').textContent=s.n;document.getElementById('c2').textContent=s.d+'分钟';
+document.getElementById('c3').textContent=sd;document.getElementById('c4').textContent=stm+' 到店';
+document.getElementById('c5').textContent='¥'+s.p;
+}
+if(n===4){AD_SEL_DATE=new Date().toISOString().split('T')[0];adDaySw();renderTimeline(AD_SEL_DATE);}
+for(var i=1;i<=4;i++){
+var p=document.getElementById('pg'+i);p.classList.toggle('act',i===n);
+var dt=document.getElementById('dt'+i);dt.className='dt';
+if(i===n)dt.classList.add('act');else if(i<n)dt.classList.add('dn');
+}
+}
+
+function rS(){
+var g=document.getElementById('sg');g.innerHTML='';
+sv.forEach(function(s){
+var d=document.createElement('div');d.className='sb';d.dataset.id=s.id;
+d.innerHTML='<div class="nm">'+s.n+'</div><div class="mt">'+s.d+'分钟 · '+s.m+'</div><div class="pr">¥'+s.p+'</div>';
+d.addEventListener('click',function(){sC(s.id);});
+g.appendChild(d);});
+}
+function sC(id){
+ss=id;
+document.querySelectorAll('.sb').forEach(function(e){e.classList.toggle('sel',e.dataset.id===id);});
+document.getElementById('b1').disabled=false;
+var s=sv.find(function(x){return x.id===id});
+document.getElementById('svb').textContent=s.n+' ¥'+s.p;
+}
+function rdD(){
+var s=document.getElementById('ds');s.innerHTML='';var t=new Date();
+for(var i=1;i<=7;i++){var d=new Date(t);d.setDate(d.getDate()+i);var ds=d.toISOString().split('T')[0];
+var el=document.createElement('div');el.className='di';el.dataset.date=ds;
+el.innerHTML='<div class="dw">周'+WK[d.getDay()]+'</div><div class="dy">'+d.getDate()+'</div><div class="mo">'+(d.getMonth()+1)+'月</div>';
+el.addEventListener('click',function(){sd=this.dataset.date;document.querySelectorAll('.di').forEach(function(e){e.classList.toggle('sel',e.dataset.date===sd);});rdT();stm='';uB2();});
+s.appendChild(el);}
+var f=s.querySelector('.di');if(f)f.click();
+}
+function rdT(){
+var g=document.getElementById('tg');g.innerHTML='';
+if(!ss||!sd)return;
+var s=sv.find(function(x){return x.id===ss});var t=s.d+BF*2;var rs=gr(sd);
+var n=new Date();var ts=n.toISOString().split('T')[0];var is=(sd===ts);var nm=n.getHours()*60+n.getMinutes()+30;
+var h=document.getElementById('th');var ha=false;
+for(var m=OP*60;m+t<=CL*60;m+=30){var tm2=tt(m);var c=document.createElement('div');c.className='tc';c.textContent=tm2;c.dataset.time=tm2;
+if(is&&m<=nm)c.classList.add('ua');
+else if(ov(m,m+t,rs))c.classList.add('ua');
+else{ha=true;c.addEventListener('click',function(){stm=this.dataset.time;document.querySelectorAll('.tc').forEach(function(e){e.classList.toggle('sel',e.dataset.time===stm);});uB2();});}
+g.appendChild(c);}
+if(!ha){h.innerHTML='😅 该日已约满，请选择其他日期';g.innerHTML='<div style="grid-column:1/-1;text-align:center;color:#ff6b35;padding:24px;background:#1a0a00;border-radius:10px;border:1px solid rgba(255,107,0,.2);">😅 该日已约满</div>';}
+else h.innerHTML='<i class="far fa-clock"></i> 可用时段如上';
+}
+function uB2(){document.getElementById('b2').disabled=!stm;}
+function cS(){
+var n=document.getElementById('in1').value.trim();
+var p=document.getElementById('in2').value.trim();
+document.getElementById('b3').disabled=!(ss&&sd&&stm&&n&&/^1(3[0-9]|4[5-9]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\d{8}$/.test(p));
+}
+document.getElementById('in1').addEventListener('input',cS);
+document.getElementById('in2').addEventListener('input',cS);
+
+function sub(){
+var n=document.getElementById('in1').value.trim();
+var p=document.getElementById('in2').value.trim();
+if(!n){alert('请输入您的称呼');return;}
+if(!/^1(3[0-9]|4[5-9]|5[0-35-9]|6[2567]|7[0-8]|8[0-9]|9[0-35-9])\d{8}$/.test(p)){alert('请输入真实有效的手机号码');return;}
+var s=sv.find(function(x){return x.id===ss});var m=tm(stm);var now=new Date();
+var bid='NN'+now.getFullYear().toString().slice(-2)+String(now.getMonth()+1).padStart(2,'0')+String(now.getDate()).padStart(2,'0')+String(now.getHours()).padStart(2,'0')+String(now.getMinutes()).padStart(2,'0');
+var d={id:bid,name:n,phone:p,d:sd,svc:s.n,dur:s.d,pr:s.p,ts:stm,te:tt(m+s.d+BF*2),ss:tt(m+BF),se:tt(m+BF+s.d),s:'已确认',ca:now.toLocaleString('zh-CN')};
+document.getElementById('ldOv').classList.add('sh');document.getElementById('b3').disabled=true;
+setTimeout(function(){sb(d);document.getElementById('ldOv').classList.remove('sh');scS(d);},1000);
+}
+function scS(d){
+document.getElementById('scCd').textContent='预约识别号 ' + d.id;
+document.getElementById('scDt').innerHTML='<strong>'+d.name+'</strong> 您好！<br><br>💆 项目：'+d.svc+'（'+d.dur+'分钟）<br>📅 日期：'+d.d+'<br>⏰ 到店时间：<strong>'+d.ts+'</strong><br>🕐 服务时间：'+d.ss+'-'+d.se+'<br>💰 费用：¥'+d.pr+'<br>📋 状态：已确认';
+document.getElementById('scOv').classList.add('sh');
+}
+/* ===== 管理看板-时间轴 ===== */
+var AD_SEL_DATE='';  // 当前看板选中日期
+
+function ra(){
+  var d=AD_SEL_DATE||new Date().toISOString().split('T')[0];
+  renderTimeline(d);
+}
+
+function renderTimeline(dateStr){
+  var all=gb();
+  var dayBookings=all.filter(function(b){return b.d===dateStr&&b.s!=='已取消'});
+  var today=new Date().toISOString().split('T')[0];
+  var isToday=(dateStr===today);
+  var nowMin=isToday?new Date().getHours()*60+new Date().getMinutes():0;
+
+  // 统计
+  document.getElementById('adTot').textContent=all.length;
+  document.getElementById('adBkd').textContent=dayBookings.length;
+
+  // 计算营业时段内总空位数
+  var OPEN=OP*60, CLOSE=CL*60, SLOT=30;
+  var totalSlots=0, freeSlots=0;
+  for(var m=OPEN;m<CLOSE;m+=SLOT){totalSlots++;}
+  var bookedSlots={};
+  dayBookings.forEach(function(b){
+    var bs=tm(b.ts), be=tm(b.te);
+    for(var m2=bs;m2<be;m2+=SLOT){bookedSlots[m2]=true;}
+  });
+  for(var m=OPEN;m<CLOSE;m+=SLOT){
+    if(isToday&&m<=nowMin)continue;
+    if(!bookedSlots[m])freeSlots++;
+  }
+  document.getElementById('adFree').textContent=freeSlots;
+
+  // 渲染时间轴
+  var tl=document.getElementById('adTl');
+  var prevEnd=OPEN;
+  var html='';
+
+  // 按预约开始时间排序
+  var sorted=dayBookings.slice().sort(function(a,b){return tm(a.ts)-tm(b.ts);});
+
+  sorted.forEach(function(b){
+    var bs=tm(b.ts), be=tm(b.te);
+    // 空闲段（如果有）
+    if(bs>prevEnd){
+      for(var m=prevEnd;m<bs;m+=SLOT){
+        if(isToday&&m<=nowMin) continue;
+        html+=renderFreeSlot(m,dateStr);
+      }
+    }
+    // 已预约段
+    html+=renderBookedSlot(b,dateStr);
+    if(be>prevEnd)prevEnd=be;
+  });
+  // 最后空闲段
+  for(var m=prevEnd;m<CLOSE;m+=SLOT){
+    if(isToday&&m<=nowMin) continue;
+    html+=renderFreeSlot(m,dateStr);
+  }
+
+  if(!html){
+    html='<div class="em"><i class="far fa-calendar-check"></i><p>该日无预约安排</p><p style="font-size:.65rem;color:#5a4a3a;margin-top:6px;">点击空闲时段可手动添加</p></div>';
+  }
+
+  tl.innerHTML=html;
+}
+
+function renderFreeSlot(m,dateStr){
+  var t=tt(m);
+  return '<div class="ad-sl"><span class="ad-tm">'+t+'</span><span class="ad-bar free" onclick="shAd(\''+dateStr+'\',\''+t+'\')"><span class="ad-dot"></span>空闲</span></div>';
+}
+
+function renderBookedSlot(b,dateStr){
+  var bs=tm(b.ts);
+  var t=b.ts;
+  var nm=b.name;
+  var mk=b.phone.slice(0,3)+'****'+b.phone.slice(-4);
+  return '<div class="ad-sl"><span class="ad-tm">'+t+'</span><span class="ad-bar booked" onclick="tgDt(\''+b.id+'\')"><span class="ad-dot"></span>'+nm+' · '+b.svc+'</span><div class="ad-detail" id="dd-'+b.id+'"><div class="nm">'+nm+'</div><div class="info">📞 <span class="ph" id="aph-'+b.id+'" onclick="rvAd(\''+b.id+'\')">'+mk+'</span></div><div class="info">💆 '+b.svc+' · '+b.dur+'分钟 · ¥'+b.pr+'</div><div class="info">⏰ 服务时段 '+b.ss+' ~ '+b.se+'</div><div class="ac"><button class="ok" onclick="cnAd(\''+b.id+'\')">已完成</button><button class="no" onclick="clAdBk(\''+b.id+'\')">取消预约</button></div></div></div>';
+}
+
+function tgDt(id){
+  var el=document.getElementById('dd-'+id);
+  if(!el)return;
+  // 收起其他展开的
+  document.querySelectorAll('.ad-detail.sh').forEach(function(e){if(e.id!=='dd-'+id)e.classList.remove('sh');});
+  el.classList.toggle('sh');
+}
+
+function rvAd(id){
+  var el=document.getElementById('aph-'+id);
+  if(!el||el.classList.contains('rv'))return;
+  var b=gb().find(function(x){return x.id===id});if(!b)return;
+  el.textContent=b.phone;el.classList.add('rv');
+  setTimeout(function(){if(el.classList.contains('rv')){el.textContent=b.phone.slice(0,3)+'****'+b.phone.slice(-4);el.classList.remove('rv');}},8000);
+}
+
+function cnAd(id){
+  if(!confirm('标记为"已完成"？'))return;
+  us(id,'已完成');renderTimeline(AD_SEL_DATE||new Date().toISOString().split('T')[0]);
+}
+
+function clAdBk(id){
+  if(!confirm('确定取消此预约？'))return;
+  us(id,'已取消');renderTimeline(AD_SEL_DATE||new Date().toISOString().split('T')[0]);
+}
+
+/* ===== 日期切换 ===== */
+function adDaySw(){
+  var el=document.getElementById('adDays');
+  el.innerHTML='';
+  var t=new Date();
+  for(var i=0;i<=7;i++){
+    var d=new Date(t);d.setDate(d.getDate()+i);
+    var ds=d.toISOString().split('T')[0];
+    var isSel=(ds===AD_SEL_DATE);
+    var it=document.createElement('div');
+    it.className='ad-d'+(isSel?' sel':'');
+    it.innerHTML='<div>'+(i===0?'今天':d.getDate()+'日')+'</div><div class="ad-we">周'+WK[d.getDay()]+'</div>';
+    (function(ds2){it.addEventListener('click',function(){AD_SEL_DATE=ds2;adDaySw();renderTimeline(ds2);});})(ds);
+    el.appendChild(it);
+  }
+}
+
+/* ===== 手动添加预约 ===== */
+function shAd(dateStr,timeStr){
+  document.getElementById('adName').value='';
+  document.getElementById('adPhone').value='';
+  document.getElementById('adDate').value=dateStr||new Date().toISOString().split('T')[0];
+  document.getElementById('adAddErr').textContent='';
+
+  // 填充服务选项
+  var svcSel=document.getElementById('adSvc');
+  svcSel.innerHTML='<option value="">请选择…</option>';
+  sv.forEach(function(s){svcSel.innerHTML+='<option value="'+s.id+'">'+s.n+'（¥'+s.p+' · '+s.d+'分钟）</option>';});
+
+  // 填充时间选项（只显示空闲时段）
+  var tmSel=document.getElementById('adTime');
+  tmSel.innerHTML='<option value="">请选择…</option>';
+  var d=dateStr||new Date().toISOString().split('T')[0];
+  var bookings=gb().filter(function(b){return b.d===d&&b.s!=='已取消'});
+  var OPEN=OP*60,CLOSE=CL*60,SLOT=30;
+  var bMap={};
+  bookings.forEach(function(b){
+    var bs=tm(b.ts),be=tm(b.te);
+    for(var m=bs;m<be;m+=SLOT)bMap[m]=true;
+  });
+  var isToday=(d===new Date().toISOString().split('T')[0]);
+  var nowMin=isToday?new Date().getHours()*60+new Date().getMinutes():0;
+  for(var m=OPEN;m<CLOSE;m+=SLOT){
+    if(isToday&&m<=nowMin)continue;
+    if(bMap[m])continue;
+    var t=tt(m);
+    var sel=(t===timeStr)?' selected':'';
+    tmSel.innerHTML+='<option value="'+m+'"'+sel+'>'+t+'</option>';
+  }
+
+  document.getElementById('adAddOv').classList.add('sh');
+}
+
+function clAdAdd(){
+  document.getElementById('adAddOv').classList.remove('sh');
+}
+
+function doAdAdd(){
+  var name=document.getElementById('adName').value.trim();
+  var phone=document.getElementById('adPhone').value.trim();
+  var date=document.getElementById('adDate').value;
+  var timeIdx=document.getElementById('adTime').value;
+  var svcId=document.getElementById('adSvc').value;
+  var errEl=document.getElementById('adAddErr');
+
+  if(!name){errEl.textContent='请输入称呼';return;}
+  if(!phone||!/^1\d{10}$/.test(phone)){errEl.textContent='请输入11位手机号码';return;}
+  if(!date){errEl.textContent='请选择日期';return;}
+  if(!timeIdx){errEl.textContent='请选择时间';return;}
+  if(!svcId){errEl.textContent='请选择服务项目';return;}
+
+  var s=sv.find(function(x){return x.id===svcId});
+  if(!s){errEl.textContent='服务项目无效';return;}
+
+  var m=Number(timeIdx);
+  var t=tt(m);
+  var bid='NN'+date.replace(/-/g,'').slice(2)+t.replace(':','');
+  var te=tt(m+s.d+BF*2);
+  var ss=tt(m+BF);
+  var se=tt(m+BF+s.d);
+
+  // 检查冲突
+  var sameDay=gb().filter(function(b){return b.d===date&&b.s!=='已取消'});
+  for(var i=0;i<sameDay.length;i++){
+    var bs=tm(sameDay[i].ts),be=tm(sameDay[i].te);
+    if(m<be&&(m+s.d+BF*2)>bs){
+      errEl.textContent='该时段与已有预约冲突（'+sameDay[i].name+' '+sameDay[i].ts+'）';
+      return;
+    }
+  }
+
+  var d={id:bid,name:name,phone:phone,d:date,svc:s.n,dur:s.d,pr:s.p,ts:t,te:te,ss:ss,se:se,s:'已确认',ca:'手动添加'};
+  sb(d);
+  document.getElementById('adAddOv').classList.remove('sh');
+  renderTimeline(AD_SEL_DATE||date);
+}
+
+function exp(){var l=gb();if(!l.length){alert('暂无记录');return;}var c='编号,称呼,电话,日期,到店时间,项目,时长,费用,状态,创建时间\n';l.forEach(function(b){c+=b.id+','+b.name+','+b.phone+','+b.d+','+b.ts+','+b.svc+','+b.dur+','+b.pr+','+b.s+','+b.ca+'\n';});var b=new Blob(['\uFEFF'+c],{type:'text/csv;charset=utf-8;'});var a=document.createElement('a');a.href=URL.createObjectURL(b);a.download='预约_'+new Date().toISOString().split('T')[0]+'.csv';a.click();URL.revokeObjectURL(a.href);}
+
+function copyWx(){
+  var w="dsf0951";
+  if(navigator.clipboard&&navigator.clipboard.writeText){
+    navigator.clipboard.writeText(w).then(function(){alert("微信号已复制: "+w+"\n请打开微信搜索添加")});
+  } else {
+    var ta=document.createElement("textarea");
+    ta.value=w;ta.style.position="fixed";ta.style.left="-9999px";
+    document.body.appendChild(ta);ta.select();
+    try{document.execCommand("copy");alert("微信号已复制: "+w+"\n请打开微信搜索添加")}catch(e){alert("微信号: "+w)}
+    document.body.removeChild(ta);
+  }
+}
+
+function dlCal(){
+  var id=document.getElementById("scCd").textContent.trim();
+  var dtl=document.getElementById("scDt").textContent.trim()||"";
+  var parts=dtl.match(/(\d{4})年(\d{1,2})月(\d{1,2})日.*?到店.*?(\d{2}:\d{2})/);
+  if(!parts){alert("请先完成预约再添加日历");return;}
+  var dt=new Date(parts[1]+"-"+parts[2]+"-"+parts[3]+" "+parts[4]);
+  var endDt=new Date(dt.getTime()+60*60*1000);
+  function fmt(d){return d.toISOString().replace(/-|:/g,"").substring(0,15)+"Z";}
+  var ics="BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//NN//Booking//ZH\nBEGIN:VEVENT\nDTSTART:"+fmt(dt)+"\nDTEND:"+fmt(endDt)+"\nSUMMARY:拿捏社推拿 - 到店\nDESCRIPTION:预约编号: "+id+"\nLOCATION:银川市金凤区新昌路蓝山公寓5楼521号\nBEGIN:VALARM\nTRIGGER:-PT1H\nACTION:DISPLAY\nDESCRIPTION:拿捏社推拿预约提醒\nEND:VALARM\nEND:VEVENT\nEND:VCALENDAR";
+  var blob=new Blob([ics],{type:"text/calendar;charset=utf-8"});
+  var a=document.createElement("a");a.href=URL.createObjectURL(blob);
+  a.download="拿捏社预约_"+id+".ics";a.click();URL.revokeObjectURL(a.href);
+}
+
+window.addEventListener('DOMContentLoaded',function(){rS();initAdminTrigger();});
+</script>
+
+
+<!-- 二维码区域：动态生成 -->
+<div id="qrArea" style="display:none;text-align:center;padding:20px 12px;margin-top:12px;">
+  <div style="display:inline-block;background:#fff;padding:16px 16px 14px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,.4);">
+    <div id="qrCodeContainer" style="position:relative;width:220px;height:220px;margin:0 auto;">
+      <canvas id="qrCanvas" width="220" height="220"></canvas>
+      <div style="position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:6px;padding:4px 10px;font-size:11px;font-weight:700;color:#8B4513;white-space:nowrap;border:1px solid rgba(139,69,19,.2);">拿捏社预约</div>
+    </div>
+    <p style="margin-top:8px;font-size:13px;color:#333;">扫一扫 · 在线预约</p>
+    <p style="margin-top:4px;font-size:11px;color:#999;">https://jimquant1983.github.io/nadianjie/</p>
+    <a id="qrDlLink" href="javascript:dlQr()" style="display:inline-block;margin-top:8px;padding:6px 20px;background:#ffd700;color:#000;border-radius:6px;text-decoration:none;font-size:13px;font-weight:bold;">📥 下载二维码</a>
+  </div>
+</div>
+<div style="text-align:center;padding:6px 12px 16px;">
+  <span onclick="toQr()" style="display:inline-block;padding:6px 16px;border:1px solid rgba(255,215,0,.3);border-radius:6px;color:rgba(255,215,0,.6);font-size:12px;cursor:pointer;">📱 生成二维码 · 推荐给更多的人</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+var _qrInst=null;
+function toQr(){
+  var area=document.getElementById('qrArea');
+  if(area.style.display==='none'){
+    area.style.display='block';
+    if(!_qrInst){
+      var url=window.location.href.split('?')[0].split('#')[0];
+      try{
+        var qr = qrcode(0, 'M');
+        qr.addData(url);
+        qr.make();
+        var c=document.getElementById('qrCanvas');
+        var ctx=c.getContext('2d');
+        var cells=qr.getModuleCount();
+        var size=220, cellSize=size/cells;
+        ctx.fillStyle='#ffffff';
+        ctx.fillRect(0,0,size,size);
+        ctx.fillStyle='#8B4513';
+        for(var r=0;r<cells;r++){
+          for(var col=0;col<cells;col++){
+            if(qr.isDark(r,col)){
+              ctx.fillRect(col*cellSize,r*cellSize,Math.ceil(cellSize),Math.ceil(cellSize));
+            }
+          }
+        }
+        // 中间"拿捏社预约" 白底框
+        var lbl='拿捏社预约';
+        ctx.fillStyle='rgba(255,255,255,0.95)';
+        ctx.fillRect(size/2-50,size/2-14,100,28);
+        ctx.fillStyle='#8B4513';
+        ctx.font='bold 14px "Microsoft YaHei","PingFang SC",sans-serif';
+        ctx.textAlign='center';
+        ctx.textBaseline='middle';
+        ctx.fillText(lbl,size/2,size/2);
+        _qrInst=true;
+      }catch(e){
+        document.getElementById('qrCodeContainer').innerHTML='<p style="color:red;padding:40px 0;">二维码生成失败，请刷新重试</p>';
+      }
+    }
+  }else{
+    area.style.display='none';
+  }
+}
+function dlQr(){
+  var c=document.getElementById('qrCanvas');
+  if(!c)return;
+  var a=document.createElement('a');
+  a.href=c.toDataURL('image/png');
+  a.download='拿捏社预约二维码.png';
+  a.click();
+}
+</script>
+
+<!-- 底部广告栏 -->
+<div style="text-align:center;padding:16px 12px;margin-top:6px;border-top:1px solid rgba(255,215,0,.08);">
+  <span style="color:rgba(255,215,0,.5);font-size:12px;">📱 同款预约网页或更多功能定制 · 请联系微信 <span onclick="copyWx()" style="color:#ffd700;cursor:pointer;text-decoration:underline;text-decoration-style:dashed;">DSF0951</span></span>
+</div>
+</body>
+</html>
